@@ -1,0 +1,12 @@
+Makefile
+*.H
+*.o
+*.swp
+temp*
+.meta
+.project
+.cproject
+tree
+tree.exe
+.DS_store
+*.dSYM/
