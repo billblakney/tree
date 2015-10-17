@@ -10,22 +10,34 @@
 class FieldItem
 {
 public:
-  FieldItem(const QList<QVariant> &aData,FieldItem *aParentItem = 0);
+
+  enum NodeType {eNone, eRoot, ePrimitive, eStruct, ePrimitiveArrayPtr, eStructArrayPtr};
+
+  FieldItem(NodeType aType,const QList<QVariant> &aData,FieldItem *aParentItem = 0);
+
   virtual ~FieldItem();
 
   void appendChild(FieldItem *item);
 
   FieldItem *child(int row);
+
   int childCount() const;
+
   int columnCount() const;
+
   QVariant data(int column) const;
+
   int row() const;
+
   FieldItem *parentItem() const;
 
+  NodeType getType() const;
+
 private:
+  FieldItem         *_ParentItem;
+  NodeType          _Type;
+  QList<QVariant>   _ItemData;
   QList<FieldItem*> _ChildItems;
-  QList<QVariant> _ItemData;
-  FieldItem *_ParentItem;
 
 };
 

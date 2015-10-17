@@ -2,6 +2,7 @@
 #define DATASTRUCTMODEL_HH_
 
 #include <QAbstractItemModel>
+#include <QFont>
 #include <QModelIndex>
 #include <QVariant>
 #include "FieldItem.hh"
@@ -32,6 +33,9 @@ public:
   int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
 private:
+
+  static QFont kArrayFont;
+
   FieldItem *rootItem;
   void setupModelData() {}
 };

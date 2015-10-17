@@ -1,9 +1,11 @@
 #include "FieldItem.hh"
 
-FieldItem::FieldItem(const QList<QVariant> &aData,FieldItem *aParentItem)
+FieldItem::FieldItem(
+    NodeType aType,const QList<QVariant> &aData,FieldItem *aParentItem)
+  : _ParentItem(aParentItem),
+    _Type(aType),
+    _ItemData(aData)
 {
-  _ParentItem = aParentItem;
-  _ItemData = aData;
 }
 
 FieldItem::~FieldItem()
@@ -48,4 +50,9 @@ QVariant FieldItem::data(int column) const
 FieldItem *FieldItem::parentItem() const
 {
   return _ParentItem;
+}
+
+FieldItem::NodeType FieldItem::getType() const
+{
+  return _Type;
 }
