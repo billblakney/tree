@@ -4,6 +4,9 @@
 #include <QList>
 #include <QVariant>
 
+/**
+ * FieldItem represents a node in the data structure tree.
+ */
 class FieldItem
 {
 public:

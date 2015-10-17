@@ -10,18 +10,48 @@
 
 using namespace std;
 
+#define DO_STRUCTOR_STUFF
+#ifdef DO_STRUCTOR_STUFF
+#include <cstdio>
+#include "../structor/StructorBuilder.hh"
+
+extern StructorBuilder &lex_main(char *aHeaderFile);
+
+static DataStructModel *tDataStructModel;
+
+void doStructorStuff(int argc,char **argv)
+{
+   if( argc < 2 )
+      printf("Usage: pp <in_file>\n");
+
+   StructorBuilder &sb = lex_main(argv[1]);
+//   sb.printSummary();
+//   sb.postProcess();
+
+  std::string tCarReportType("CONTACT_ATTRIBUTES_REPORT_T");
+
+Structure *tStructure = sb.getStructure(tCarReportType);
+
+tDataStructModel = new DataStructModel(
+    tStructure,&sb);
+}
+#endif
+
 /*------------------------------------------------------------------------------
  *----------------------------------------------------------------------------*/
 int main(int argc, char *argv[])
 {
    QApplication app(argc, argv);
 
+doStructorStuff(argc,argv);
+
    QWidget *window = new QWidget;
 
 //   QFileSystemModel *tModel = new QFileSystemModel;
-   QAbstractItemModel *tModel = new DataStructModel();
+//   QAbstractItemModel *tModel = new DataStructModel();
    QTreeView *tTree = new QTreeView(window);
-   tTree->setModel(tModel);
+//   tTree->setModel(tModel);
+   tTree->setModel(tDataStructModel);
 
 #if 0
    //-------------------------

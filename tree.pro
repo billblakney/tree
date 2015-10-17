@@ -8,10 +8,18 @@ DEPENDPATH += .
 INCLUDEPATH += /usr/include/QtXml
 INCLUDEPATH += /opt/protobuf-2.4.1/include
 INCLUDEPATH += .
-QT = core gui
+QT = core gui widgets
 
-LIBS += -L/opt/boost/lib -lboost_program_options
-#Bill- LIBS += -L/usr/lib
+#Bill- LIBS += -L/usr/lib \
+LIBS += -L/opt/boost/lib -lboost_program_options \
+        -L/usr/lib/x86_64-linux-gnu -lboost_regex \
+        ../structor/structor.so
+#        ../structor/Field.o \
+#        ../structor/main.o \
+#        ../structor/StructorBuilder.o \
+#        ../structor/Structure.o \
+
+INCLUDEPATH += ../structor
 
 # Input
 HEADERS += \

@@ -5,12 +5,21 @@
 #include <QModelIndex>
 #include <QVariant>
 #include "FieldItem.hh"
+#include "Structure.hh"
+#include "StructorBuilder.hh"
 
 class DataStructModel : public QAbstractItemModel
 {
 public:
   DataStructModel();
+  DataStructModel(Structure *aStructure);
   virtual ~DataStructModel();
+
+  DataStructModel(
+      Structure *aStructure,StructorBuilder *aStructBuilder);
+
+  void buildTree(FieldItem *rootItem,Structure *aStructure,
+      StructorBuilder *aStructBuilder,int aLevel = 0);
 
   QVariant data(const QModelIndex &index,int role) const;
   Qt::ItemFlags flags(const QModelIndex &index) const;
