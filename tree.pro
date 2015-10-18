@@ -25,8 +25,10 @@ INCLUDEPATH += ../structor
 HEADERS += \
            DataStructModel.hh \
            FieldItem.hh \
+           StreamReader.hh \
 
 SOURCES += \
            main.cc \
            DataStructModel.cc \
            FieldItem.cc \
+           StreamReader.cc \

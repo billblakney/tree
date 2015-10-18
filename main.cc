@@ -7,6 +7,7 @@
 #include <QVBoxLayout>
 #include <set>
 #include "DataStructModel.hh"
+#include "StreamReader.hh"
 
 using namespace std;
 
@@ -42,6 +43,9 @@ tDataStructModel = new DataStructModel(
 int main(int argc, char *argv[])
 {
    QApplication app(argc, argv);
+
+   StreamReader *tStreamReader = new StreamReader();
+   tStreamReader->start();
 
 doStructorStuff(argc,argv);
 
