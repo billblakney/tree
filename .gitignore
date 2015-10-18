@@ -10,3 +10,4 @@ tree
 tree.exe
 .DS_store
 *.dSYM/
+moc_*
