@@ -42,7 +42,15 @@ DataStructModel::DataStructModel(
   rootData.append(tRootVariant);
   rootItem = new FieldItem(FieldItem::eRoot,rootData);
 
-  buildTree(rootItem,aStructure,aStructBuilder);
+  QList<QVariant> topNodeData;
+  QVariant tTopNodeVariant(aStructure->_Name.c_str());
+  topNodeData.append(tTopNodeVariant);
+  FieldItem *topNodeItem = new FieldItem(FieldItem::eRoot,topNodeData,rootItem);
+
+  rootItem->appendChild(topNodeItem);
+
+  buildTree(topNodeItem,aStructure,aStructBuilder);
+//  buildTree(rootItem,aStructure,aStructBuilder);
 }
 
 DataStructModel::~DataStructModel()
@@ -299,8 +307,9 @@ QVariant DataStructModel::headerData(int section,Qt::Orientation orientation,
 {
   if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
   {
-    return rootItem->data(section);
+    return QVariant("Field Name");
   }
+
   return QVariant();
 }
 
