@@ -46,14 +46,17 @@ int main(int argc, char *argv[])
 doStructorStuff(argc,argv);
 
   QWidget *window = new QWidget;
-//  window->setMinimumSize(400,800);
   window->setGeometry(2555,135,400,800);
 
-//   QFileSystemModel *tModel = new QFileSystemModel;
-//   QAbstractItemModel *tModel = new DataStructModel();
    QTreeView *tTree = new QTreeView(window);
-//   tTree->setModel(tModel);
    tTree->setModel(tDataStructModel);
+
+// TODO works form 4.8 on
+#ifdef EXPAND_ALL
+   tTree->expandAll();
+#else
+   tTree->expand(tTree->model()->index(0,0,QModelIndex()));
+#endif
 
 #if 0
    //-------------------------
