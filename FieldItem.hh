@@ -33,11 +33,16 @@ public:
 
   NodeType getType() const;
 
+  Qt::CheckState getCheckState();
+
+  void setCheckState(Qt::CheckState aCheckState);
+
 private:
   FieldItem         *_ParentItem;
   NodeType          _Type;
   QList<QVariant>   _ItemData;
   QList<FieldItem*> _ChildItems;
+  Qt::CheckState    _CheckState;
 
 };
 

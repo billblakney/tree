@@ -23,13 +23,22 @@ public:
       StructorBuilder *aStructBuilder,int aLevel = 0);
 
   QVariant data(const QModelIndex &index,int role) const;
+
+  bool setData(const QModelIndex &index,const QVariant &value,
+      int role = Qt::EditRole);
+
   Qt::ItemFlags flags(const QModelIndex &index) const;
+
   QVariant headerData(int section,Qt::Orientation orientation,
       int role = Qt::DisplayRole) const;
+
   QModelIndex index(int row,int col,
       const QModelIndex &parent = QModelIndex()) const;
+
   QModelIndex parent(const QModelIndex &index) const;
+
   int rowCount(const QModelIndex &parent = QModelIndex()) const;
+
   int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
 private:
@@ -38,6 +47,10 @@ private:
 
   FieldItem *rootItem;
   void setupModelData() {}
+  void setChildrenCheckStates(
+      const QModelIndex &aParentIndex,Qt::CheckState aCheckState);
+  void updateParentCheckState(
+      const QModelIndex &aChildIndex,Qt::CheckState aNewState);
 };
 
 #endif /* DATASTRUCTMODEL_HH_ */

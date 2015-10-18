@@ -4,7 +4,8 @@ FieldItem::FieldItem(
     NodeType aType,const QList<QVariant> &aData,FieldItem *aParentItem)
   : _ParentItem(aParentItem),
     _Type(aType),
-    _ItemData(aData)
+    _ItemData(aData),
+    _CheckState(Qt::Unchecked)
 {
 }
 
@@ -55,4 +56,14 @@ FieldItem *FieldItem::parentItem() const
 FieldItem::NodeType FieldItem::getType() const
 {
   return _Type;
+}
+
+Qt::CheckState FieldItem::getCheckState()
+{
+  return _CheckState;
+}
+
+void FieldItem::setCheckState(Qt::CheckState aCheckState)
+{
+  _CheckState = aCheckState;
 }

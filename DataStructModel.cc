@@ -216,6 +216,12 @@ QVariant DataStructModel::data(const QModelIndex &index,int role) const
     case Qt::DisplayRole:
       return item->data(index.column());
       break;
+    case Qt::CheckStateRole:
+      if (index.column() == 0)
+      {
+        return static_cast<int>(item->getCheckState());
+      }
+      break;
     case Qt::FontRole:
       if( item->getType() == FieldItem::eStructArrayPtr
        || item->getType() == FieldItem::ePrimitiveArrayPtr)
@@ -236,6 +242,39 @@ QVariant DataStructModel::data(const QModelIndex &index,int role) const
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
+bool DataStructModel::setData(
+    const QModelIndex &index,const QVariant &value,int role)
+{
+  if( role == Qt::CheckStateRole && index.column() == 0)
+  {
+    FieldItem *item = static_cast<FieldItem*>(index.internalPointer());
+
+    Qt::CheckState tNewState = Qt::PartiallyChecked;
+
+    if (value == Qt::Checked)
+    {
+      tNewState = Qt::Checked;
+    }
+    else if (value == Qt::Unchecked)
+    {
+      tNewState = Qt::Unchecked;
+    }
+
+    item->setCheckState(tNewState);
+    emit dataChanged(index,index);
+
+    if (item->childCount() > 0)
+    {
+      setChildrenCheckStates(index,tNewState);
+    }
+
+    updateParentCheckState(index,tNewState);
+  }
+  return true;
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 Qt::ItemFlags DataStructModel::flags(const QModelIndex &index) const
 {
   if (!index.isValid())
@@ -243,7 +282,14 @@ Qt::ItemFlags DataStructModel::flags(const QModelIndex &index) const
     return 0;
   }
 
-  return QAbstractItemModel::flags(index);
+  Qt::ItemFlags tFlags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+
+  if (index.column() == 0)
+  {
+    tFlags |= Qt::ItemIsUserCheckable;
+  }
+
+  return tFlags;
 }
 
 //-------------------------------------------------------------------------------
@@ -346,3 +392,85 @@ int DataStructModel::columnCount(const QModelIndex &parent) const
   }
 }
 
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+void DataStructModel::setChildrenCheckStates(
+    const QModelIndex &aParentIndex,Qt::CheckState aNewState)
+{
+  FieldItem *aParentItem =
+      static_cast<FieldItem*>(aParentIndex.internalPointer());
+
+  int tChildCount = aParentItem->childCount();
+  if (tChildCount == 0)
+  {
+    return;
+  }
+
+  for (int i = 0; i < tChildCount; i++)
+  {
+    FieldItem *aChild = aParentItem->child(i);
+    aChild->setCheckState(aNewState);
+    QModelIndex aChildIndex = index(i,0,aParentIndex);
+    setChildrenCheckStates(aChildIndex,aNewState);
+  }
+
+  QModelIndex tFirstIndex = index(0,0,aParentIndex);
+  QModelIndex tLastIndex = index(tChildCount-1,0,aParentIndex);
+  emit dataChanged(tFirstIndex,tLastIndex);
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+void DataStructModel::updateParentCheckState(
+    const QModelIndex &aChildIndex,Qt::CheckState aNewState)
+{
+  QModelIndex aParentIndex = parent(aChildIndex);
+
+  if (!aParentIndex.isValid())
+  {
+    return;
+  }
+
+  FieldItem *tParentItem =
+      static_cast<FieldItem*>(aParentIndex.internalPointer());
+
+  bool tAllChildrenMatch = true;
+  int tChildCount = tParentItem->childCount();
+  for (int i = 0; i < tChildCount; i++)
+  {
+    FieldItem *tChild = tParentItem->child(i);
+    if (tChild->getCheckState() != aNewState)
+    {
+      tAllChildrenMatch = false;
+      break;
+    }
+  }
+
+  bool tChangedParent = false;
+  if (tAllChildrenMatch)
+  {
+    if (tParentItem->getCheckState() != aNewState)
+    {
+      tParentItem->setCheckState(aNewState);
+      emit dataChanged(aParentIndex,aParentIndex);
+      tChangedParent = true;
+    }
+  }
+  else
+  {
+    std::cout << "updateParentCheckState(): all children DO NOT match" << std::endl;
+    if (tParentItem->getCheckState() != Qt::PartiallyChecked)
+    {
+      tParentItem->setCheckState(Qt::PartiallyChecked);
+      emit dataChanged(aParentIndex,aParentIndex);
+      tChangedParent = true;
+    }
+  }
+
+  // If we've changed the check state of the parent, then recursively call
+  // this function on the parent of the parent.
+  if (tChangedParent)
+  {
+    updateParentCheckState(aParentIndex,aNewState);
+  }
+}

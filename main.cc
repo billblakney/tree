@@ -45,7 +45,9 @@ int main(int argc, char *argv[])
 
 doStructorStuff(argc,argv);
 
-   QWidget *window = new QWidget;
+  QWidget *window = new QWidget;
+//  window->setMinimumSize(400,800);
+  window->setGeometry(2555,135,400,800);
 
 //   QFileSystemModel *tModel = new QFileSystemModel;
 //   QAbstractItemModel *tModel = new DataStructModel();
