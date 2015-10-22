@@ -7,8 +7,9 @@ TARGET = tree
 DEPENDPATH += .
 INCLUDEPATH += /usr/include/QtXml
 INCLUDEPATH += /opt/protobuf-2.4.1/include
+INCLUDEPATH += /opt/boost/include
 INCLUDEPATH += .
-QT = core gui widgets
+QT = core gui
 
 #Bill- LIBS += -L/usr/lib \
 LIBS += -L/opt/boost/lib -lboost_program_options \
