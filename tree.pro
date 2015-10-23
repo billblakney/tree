@@ -10,6 +10,9 @@ INCLUDEPATH += /opt/protobuf-2.4.1/include
 INCLUDEPATH += /opt/boost/include
 INCLUDEPATH += .
 QT = core gui
+greaterThan(QT_MAJOR_VERSION, 4) {
+    QT += widgets
+}
 
 #Bill- LIBS += -L/usr/lib \
 LIBS += -L/opt/boost/lib -lboost_program_options \
