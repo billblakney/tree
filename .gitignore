@@ -1,5 +1,4 @@
 Makefile
-*.H
 *.o
 *.swp
 temp*
