@@ -30,6 +30,7 @@ HEADERS += \
            DataStructModel.hh \
            FieldItem.hh \
            MainWindow.hh \
+           SimpleLineConsumer.hh \
            StreamReader.hh \
 
 SOURCES += \
@@ -37,4 +38,5 @@ SOURCES += \
            DataStructModel.cc \
            FieldItem.cc \
            MainWindow.cc \
+           SimpleLineConsumer.cc \
            StreamReader.cc \

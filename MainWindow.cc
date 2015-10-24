@@ -14,11 +14,13 @@ using namespace std;
 
 extern StructorBuilder *lex_main(char *aHeaderFile);
 
-
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 MainWindow::MainWindow(int argc,char *argv[],
     QApplication &aApplication,QWidget *aParent)
   : QWidget(aParent),
     _StructorBuilder(0),
+    _DataStructModel(0),
     _StructComboBox(0),
     _StructTree(0)
 {
@@ -26,10 +28,21 @@ MainWindow::MainWindow(int argc,char *argv[],
   _InitialStruct = argv[2];
 }
 
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 MainWindow::~MainWindow()
 {
 }
 
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+DataStructModel *MainWindow::getStructDataModel()
+{
+  return _DataStructModel;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void MainWindow::setupView()
 {
   // Parse the header file.
@@ -104,18 +117,22 @@ void MainWindow::setupView()
 }
 
 //-------------------------------------------------------------------------------
+// Create a struct data model for the specified struct name and load it in the
+// tree.
 //-------------------------------------------------------------------------------
 void MainWindow::setTreeViewStruct(std::string aStructName)
 {
   Structure *tStructure = _StructorBuilder->getStructure(aStructName);
-  DataStructModel *tDataStructModel = new DataStructModel(tStructure,_StructorBuilder);
-  _StructTree->setModel(tDataStructModel);
-  // seems to have no effect
-//  _StructTree->resizeColumnToContents(0);
-//  _StructTree->resizeColumnToContents(1);
+  _DataStructModel = new DataStructModel(tStructure,_StructorBuilder);
+  _StructTree->setModel(_DataStructModel);
+#if 0 //  seems to have no effect
+  _StructTree->resizeColumnToContents(0);
+  _StructTree->resizeColumnToContents(1);
+#endif
 }
 
 //-------------------------------------------------------------------------------
+// Convert a vector of strings to a QStringList.
 //-------------------------------------------------------------------------------
 QStringList MainWindow::convertToQStringList(std::vector<std::string> aStrings)
 {
@@ -129,6 +146,7 @@ QStringList MainWindow::convertToQStringList(std::vector<std::string> aStrings)
 }
 
 //-------------------------------------------------------------------------------
+// Load the newly user-selected structure into the tree view.
 //-------------------------------------------------------------------------------
 void MainWindow::onStructComboBoxActivated(int index)
 {
