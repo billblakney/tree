@@ -68,3 +68,24 @@ void FieldItem::setCheckState(Qt::CheckState aCheckState)
 {
   _CheckState = aCheckState;
 }
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+std::string FieldItem::getFieldName()
+{
+  return _ItemData.at(eNameCol).toString().toStdString();
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+std::string FieldItem::getFieldType()
+{
+  return _ItemData.at(eTypeCol).toString().toStdString();
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+std::string FieldItem::getFieldMatch()
+{
+  return _ItemData.at(eMatchCol).toString().toStdString();
+}

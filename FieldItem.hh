@@ -11,6 +11,8 @@ class FieldItem
 {
 public:
 
+  enum Column {eNameCol, eTypeCol, eMatchCol};
+
   enum NodeType {eNone, eRoot, ePrimitive, eStruct, ePrimitiveArrayPtr, eStructArrayPtr};
 
   FieldItem(NodeType aType,const QList<QVariant> &aData,FieldItem *aParentItem = 0);
@@ -36,6 +38,12 @@ public:
   Qt::CheckState getCheckState();
 
   void setCheckState(Qt::CheckState aCheckState);
+
+  std::string getFieldName();
+
+  std::string getFieldType();
+
+  std::string getFieldMatch();
 
 private:
   FieldItem         *_ParentItem;

@@ -20,6 +20,7 @@ public slots:
   void onStructComboBoxActivated(int index);
 protected:
 	std::string _HFile;
+	std::string _InitialStruct;
 	StructorBuilder *_StructorBuilder;
 	QComboBox       *_StructComboBox;
 	QTreeView       *_StructTree;

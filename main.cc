@@ -23,13 +23,15 @@ int main(int argc, char *argv[])
 
   processCommandLine(argc,argv);
 
-//  StreamReader *tStreamReader = new StreamReader();
-//  tStreamReader->start();
-
   MainWindow *window = new MainWindow(argc,argv,app,0);
 
   window->setGeometry(2450,135,625,900);
   window->setupView();
+
+//  DataStructModel *aModel = window
+
+//  StreamReader *tStreamReader = new StreamReader();
+//  tStreamReader->start();
 
   window->show();
   return app.exec();

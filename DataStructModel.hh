@@ -12,7 +12,6 @@
 class DataStructModel : public QAbstractItemModel
 {
 public:
-  DataStructModel();
   DataStructModel(Structure *aStructure);
   virtual ~DataStructModel();
 
@@ -23,10 +22,12 @@ public:
       StructorBuilder *aStructBuilder,int aLevel = 0);
 
   QList<QVariant> buildDataList(
-    const std::string aName,const std::string aType);
+    const std::string aName,const std::string aType,std::string aMatch = "");
 
   std::string getDotString(StructorBuilder *aStructBuilder,
     std::string aName,std::string aPrefix);
+
+  std::string getMatchString(FieldItem *aFieldItem);
 
   QVariant data(const QModelIndex &index,int role) const;
 

@@ -23,6 +23,7 @@ MainWindow::MainWindow(int argc,char *argv[],
     _StructTree(0)
 {
   _HFile = argv[1];
+  _InitialStruct = argv[2];
 }
 
 MainWindow::~MainWindow()
@@ -31,6 +32,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::setupView()
 {
+  // Parse the header file.
   _StructorBuilder = lex_main((char *)_HFile.c_str());
 //   _StructorBuilder->printSummary();
 //   _StructorBuilder->postProcess();
@@ -43,13 +45,9 @@ void MainWindow::setupView()
   connect(_StructComboBox,SIGNAL(activated(int)),
                        this, SLOT(onStructComboBoxActivated(int)));
 
-  _StructTree = new QTreeView(this);
-
   // Create structure tree view.
-//  std::string tCarReportType("OUTER_T");
-  std::string tCarReportType("CONTACT_ATTRIBUTES_REPORT_T");
-  setTreeViewStruct(tCarReportType);
-
+  _StructTree = new QTreeView(this);
+  setTreeViewStruct(_InitialStruct);
   _StructTree->header()->resizeSection(0,325);
 
 // TODO works form 4.8 on
