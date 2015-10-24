@@ -3,6 +3,7 @@
 #include <vector>
 #include <QFileSystemModel>
 #include <QAbstractItemModel>
+#include <QHeaderView>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include "DataStructModel.hh"
@@ -48,6 +49,8 @@ void MainWindow::setupView()
 //  std::string tCarReportType("OUTER_T");
   std::string tCarReportType("CONTACT_ATTRIBUTES_REPORT_T");
   setTreeViewStruct(tCarReportType);
+
+  _StructTree->header()->resizeSection(0,325);
 
 // TODO works form 4.8 on
 #ifdef EXPAND_ALL
@@ -109,6 +112,9 @@ void MainWindow::setTreeViewStruct(std::string aStructName)
   Structure *tStructure = _StructorBuilder->getStructure(aStructName);
   DataStructModel *tDataStructModel = new DataStructModel(tStructure,_StructorBuilder);
   _StructTree->setModel(tDataStructModel);
+  // seems to have no effect
+//  _StructTree->resizeColumnToContents(0);
+//  _StructTree->resizeColumnToContents(1);
 }
 
 //-------------------------------------------------------------------------------

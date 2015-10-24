@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 
   MainWindow *window = new MainWindow(argc,argv,app,0);
 
-  window->setGeometry(2555,135,400,800);
+  window->setGeometry(2450,135,625,900);
   window->setupView();
 
   window->show();
