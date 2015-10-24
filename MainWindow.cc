@@ -45,7 +45,8 @@ void MainWindow::setupView()
   _StructTree = new QTreeView(this);
 
   // Create structure tree view.
-  std::string tCarReportType("OUTER_T");
+//  std::string tCarReportType("OUTER_T");
+  std::string tCarReportType("CONTACT_ATTRIBUTES_REPORT_T");
   setTreeViewStruct(tCarReportType);
 
 // TODO works form 4.8 on

@@ -11,19 +11,19 @@ DataStructModel::DataStructModel()
   QList<QVariant> rootData;
   QVariant tRootVariant("Root");
   rootData.append(tRootVariant);
-  rootItem = new FieldItem(FieldItem::eRoot,rootData);
+  _RootItem = new FieldItem(FieldItem::eRoot,rootData);
 
   QList<QVariant> data1;
   QVariant data1Variant("data1");
   data1.append(data1Variant);
-  FieldItem *data1Item = new FieldItem(FieldItem::eStruct,data1,rootItem);
-  rootItem->appendChild(data1Item);
+  FieldItem *data1Item = new FieldItem(FieldItem::eStruct,data1,_RootItem);
+  _RootItem->appendChild(data1Item);
 
   QList<QVariant> data2;
   QVariant data2Variant("data2");
   data2.append(data2Variant);
-  FieldItem *data2Item = new FieldItem(FieldItem::ePrimitive,data2,rootItem);
-  rootItem->appendChild(data2Item);
+  FieldItem *data2Item = new FieldItem(FieldItem::ePrimitive,data2,_RootItem);
+  _RootItem->appendChild(data2Item);
 
   QList<QVariant> data3;
   QVariant data3Variant("data1a");
@@ -38,20 +38,21 @@ DataStructModel::DataStructModel(
 {
   kArrayFont.setItalic(true);
 
-  QList<QVariant> rootData;
-  QVariant tRootVariant(aStructure->_Name.c_str());
-  rootData.append(tRootVariant);
-  rootItem = new FieldItem(FieldItem::eRoot,rootData);
+  // root item
+  QList<QVariant> aRootData =
+      buildDataList(aStructure->_Name,aStructure->_Name);
+  _RootItem = new FieldItem(FieldItem::eRoot,aRootData);
 
-  QList<QVariant> topNodeData;
-  QVariant tTopNodeVariant(aStructure->_Name.c_str());
-  topNodeData.append(tTopNodeVariant);
-  FieldItem *topNodeItem = new FieldItem(FieldItem::eRoot,topNodeData,rootItem);
+  // top node item
+  QList<QVariant> aTopNodeData =
+      buildDataList("struct",aStructure->_Name);
+  FieldItem *topNodeItem =
+      new FieldItem(FieldItem::eRoot,aTopNodeData,_RootItem);
 
-  rootItem->appendChild(topNodeItem);
+  _RootItem->appendChild(topNodeItem);
 
   buildTree(topNodeItem,aStructure,aStructBuilder);
-//  buildTree(rootItem,aStructure,aStructBuilder);
+  cout << getDotString(aStructBuilder,aStructure->_Name,"aStruct") << endl;
 }
 
 DataStructModel::~DataStructModel()
@@ -112,12 +113,12 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
       // print type and name.
       if (aStructBuilder->isPrimitive(tIter->_Type))
       {
-        QList<QVariant> data;
-        std::string tPointerItemString(tIter->_Name + "[]");
-        QVariant dataVariant(tPointerItemString.c_str());
-        data.append(dataVariant);
+        QList<QVariant> data =
+            buildDataList(tIter->_Name + "[]",tIter->_Type);
+
         FieldItem *dataItem = new FieldItem(
             FieldItem::ePrimitiveArrayPtr,data,aParentItem);
+
         aParentItem->appendChild(dataItem);
 
         std::cout << blanks[aLevel];
@@ -135,12 +136,12 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
         Structure *tStruct = aStructBuilder->getStructure(tIter->_Type);
         if (tStruct != NULL)
         {
-          QList<QVariant> data;
-          std::string tPointerItemString(tIter->_Name + "[]");
-          QVariant dataVariant(tPointerItemString.c_str());
-          data.append(dataVariant);
+          QList<QVariant> data =
+              buildDataList(tIter->_Name + "[]",tIter->_Type);
+
           FieldItem *dataItem = new FieldItem(
               FieldItem::eStructArrayPtr,data,aParentItem);
+
           aParentItem->appendChild(dataItem);
 
           buildTree(dataItem,tStruct,aStructBuilder,++aLevel);
@@ -159,11 +160,12 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
       Structure *tStruct = aStructBuilder->getStructure(tIter->_Type);
       if (tStruct != NULL)
       {
-        QList<QVariant> data;
-        QVariant dataVariant(tIter->_Name.c_str());
-        data.append(dataVariant);
+        QList<QVariant> data =
+            buildDataList(tIter->_Name,tIter->_Type);
+
         FieldItem *dataItem = new FieldItem(
             FieldItem::eStruct,data,aParentItem);
+
         aParentItem->appendChild(dataItem);
 
         buildTree(dataItem,tStruct,aStructBuilder,++aLevel);
@@ -183,11 +185,12 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
       std::cout << "primitive node: "
           << tIter->_Type << ":" << tIter->_Name << std::endl;
 
-      QList<QVariant> data;
-      QVariant dataVariant(tIter->_Name.c_str());
-      data.append(dataVariant);
+      QList<QVariant> data =
+          buildDataList(tIter->_Name,tIter->_Type);
+
       FieldItem *dataItem = new FieldItem(
           FieldItem::ePrimitive,data,aParentItem);
+
       aParentItem->appendChild(dataItem);
     }
   }
@@ -208,6 +211,51 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
     }
   }
 #endif
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+QList<QVariant> DataStructModel::buildDataList(
+    const std::string aName,const std::string aType)
+{
+  QList<QVariant> tList;
+
+  tList.append(QVariant(aName.c_str()));
+  tList.append(QVariant(aType.c_str()));
+
+  return tList;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+std::string DataStructModel::getDotString(StructorBuilder *aStructBuilder,
+    std::string aName,std::string aPrefix)
+{
+  stringstream tReturn;
+
+  Structure *tStructure = aStructBuilder->getStructure(aName);
+
+  if (tStructure != NULL)
+  {
+    vector<Field>::iterator it;
+    for( it = tStructure->_Fields.begin(); it != tStructure->_Fields.end(); it++)
+    {
+      std::string tName = it->_Name;
+      std::string tType = it->_Type;
+      std::string tFieldString = aPrefix + "." + tName;
+      std::string tFieldDotString = getDotString(aStructBuilder,tType,tFieldString);
+      if( tFieldDotString.length() )
+      {
+        tReturn << tFieldDotString;
+      }
+      else
+      {
+        tReturn << tFieldString << endl;
+      }
+    }
+  }
+
+  return tReturn.str();
 }
 
 //-------------------------------------------------------------------------------
@@ -308,7 +356,14 @@ QVariant DataStructModel::headerData(int section,Qt::Orientation orientation,
 {
   if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
   {
-    return QVariant("Field Name");
+    if (section == 0)
+    {
+      return QVariant("Field Name");
+    }
+    else if (section == 1)
+    {
+      return QVariant("Field Type");
+    }
   }
 
   return QVariant();
@@ -328,7 +383,7 @@ QModelIndex DataStructModel::index(int row,int col,
 
   if (!parent.isValid())
   {
-    parentItem = rootItem;
+    parentItem = _RootItem;
   }
   else
   {
@@ -358,7 +413,7 @@ QModelIndex DataStructModel::parent(const QModelIndex &index) const
   FieldItem *childItem = static_cast<FieldItem *>(index.internalPointer());
   FieldItem *parentItem = childItem->parentItem();
 
-  if (parentItem == rootItem)
+  if (parentItem == _RootItem)
   {
     return QModelIndex();
   }
@@ -378,7 +433,7 @@ int DataStructModel::rowCount(const QModelIndex &parent) const
 
   if (!parent.isValid())
   {
-    parentItem = rootItem;
+    parentItem = _RootItem;
   }
   else
   {
@@ -398,7 +453,7 @@ int DataStructModel::columnCount(const QModelIndex &parent) const
   }
   else
   {
-    return rootItem->columnCount();
+    return _RootItem->columnCount();
   }
 }
 

@@ -22,6 +22,12 @@ public:
   void buildTree(FieldItem *rootItem,Structure *aStructure,
       StructorBuilder *aStructBuilder,int aLevel = 0);
 
+  QList<QVariant> buildDataList(
+    const std::string aName,const std::string aType);
+
+  std::string getDotString(StructorBuilder *aStructBuilder,
+    std::string aName,std::string aPrefix);
+
   QVariant data(const QModelIndex &index,int role) const;
 
   bool setData(const QModelIndex &index,const QVariant &value,
@@ -45,7 +51,7 @@ private:
 
   static QFont kArrayFont;
 
-  FieldItem *rootItem;
+  FieldItem *_RootItem;
   void setupModelData() {}
   void setChildrenCheckStates(
       const QModelIndex &aParentIndex,Qt::CheckState aCheckState);
