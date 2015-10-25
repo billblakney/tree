@@ -7,6 +7,7 @@
 #include <QList>
 #include <QVariant>
 #include "LineConsumer.hh"
+#include "Logger.hh"
 
 /**
  * FieldItem represents a node in the data structure tree.
@@ -56,14 +57,20 @@ public:
   bool processLines(std::vector<std::string> &aLinesIn,
       std::vector<std::string>::iterator &aLineIter);
 
+  void printInLines();
 
-private:
+
+protected:
+
+  static ccl::Logger sLogger;
+
   FieldItem         *_ParentItem;
   NodeType           _Type;
   QList<QVariant>    _ItemData;
   QList<FieldItem*>  _ChildItems;
   Qt::CheckState     _CheckState;
   LineConsumer      *_LineConsumer;
+  std::string        _InLine;
 
 };
 

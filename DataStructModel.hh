@@ -6,6 +6,7 @@
 #include <QModelIndex>
 #include <QVariant>
 #include "FieldItem.hh"
+#include "Logger.hh"
 #include "Structure.hh"
 #include "StructorBuilder.hh"
 
@@ -25,6 +26,8 @@ public:
     const std::string aName,const std::string aType,std::string aMatch = "");
 
   bool processLinesIn(std::vector<std::string> &aLinesIn);
+
+  void printInLines();
 
   std::string getDotString(StructorBuilder *aStructBuilder,
     std::string aName,std::string aPrefix);
@@ -50,7 +53,9 @@ public:
 
   int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
-private:
+protected:
+
+  static ccl::Logger sLogger;
 
   static QFont kArrayFont;
 

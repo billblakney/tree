@@ -5,6 +5,8 @@
 #include <QVariant>
 #include "DataStructModel.hh"
 
+ccl::Logger DataStructModel::sLogger("DataStructModel");
+
 QFont DataStructModel::kArrayFont;
 
 //-------------------------------------------------------------------------------
@@ -29,8 +31,8 @@ DataStructModel::DataStructModel(
 
   buildTree(_TopNodeItem,aStructure,aStructBuilder);
 
-cout << getDotString(aStructBuilder,aStructure->_Name,"aStruct") << endl;
-cout << getMatchString(_TopNodeItem) << endl;
+DEBUG(sLogger,getDotString(aStructBuilder,aStructure->_Name,"aStruct"));
+DEBUG(sLogger,getMatchString(_TopNodeItem));
 }
 
 //-------------------------------------------------------------------------------
@@ -67,7 +69,7 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
   // indent child fields.
   if (aLevel == 0)
   {
-    std::cout << "root node: " << aStructure->_Name << std::endl;
+    DEBUG(sLogger,"root node: " << aStructure->_Name);
     aLevel++;
   }
 
@@ -82,10 +84,9 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
     // print the array type and name.
     if (boost::regex_match(tIter->_Name,what,array_size_regex))
     {
-      std::string tName = what[1];
-      std::cout << blanks[aLevel];
-      std::cout << "array size entry: "
-          << tIter->_Type << ":" << tIter->_Name << std::endl;
+//      std::string tName = what[1];
+      DEBUG(sLogger,blanks[aLevel] << "array size entry: "
+          << tIter->_Type << ":" << tIter->_Name);
     }
     else if (tIter->_IsPointer)
     {
@@ -101,18 +102,18 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
 
         aParentItem->appendChild(dataItem);
 
-        std::cout << blanks[aLevel];
-        std::cout << "primitive array node: "
-            << tIter->_Type << ":" << tIter->_Name << std::endl;
+//        DEBUG(sLogger,blanks[aLevel]);
+        DEBUG(sLogger,blanks[aLevel] << "primitive array node: "
+            << tIter->_Type << ":" << tIter->_Name);
       }
       // For struct pointer,
       // print type and name, increment level, and call this routine
       // recursively to print the contents of the struct.
       else
       {
-        std::cout << blanks[aLevel];
-        std::cout << "struct array node: "
-            << tIter->_Type << ":" << tIter->_Name << std::endl;
+//        DEBUG(sLogger,blanks[aLevel]);
+        DEBUG(sLogger,blanks[aLevel] << "struct array node: "
+            << tIter->_Type << ":" << tIter->_Name);
         Structure *tStruct = aStructBuilder->getStructure(tIter->_Type);
         if (tStruct != NULL)
         {
@@ -134,9 +135,9 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
     // contents of the struct.
     else if (!aStructBuilder->isPrimitive(tIter->_Type))
     {
-      std::cout << blanks[aLevel];
-      std::cout << "struct node: "
-          << tIter->_Type << ":" << tIter->_Name << std::endl;
+//      DEBUG(sLogger,blanks[aLevel]);
+      DEBUG(sLogger,blanks[aLevel] << "struct node: "
+          << tIter->_Type << ":" << tIter->_Name);
       Structure *tStruct = aStructBuilder->getStructure(tIter->_Type);
       if (tStruct != NULL)
       {
@@ -153,17 +154,17 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
       }
       else
       {
-        std::cout << blanks[aLevel];
-        std::cout << "ERROR: can't find struct " << tIter->_Name << std::endl;
+//        DEBUG(sLogger,blanks[aLevel]);
+        ERROR(sLogger,blanks[aLevel] << "Can't find struct " << tIter->_Name);
       }
     }
     // For primitive type field,
     // print field type and name at current indent level.
     else
     {
-      std::cout << blanks[aLevel];
-      std::cout << "primitive node: "
-          << tIter->_Type << ":" << tIter->_Name << std::endl;
+//      DEBUG(sLogger,blanks[aLevel]);
+      DEBUG(sLogger,blanks[aLevel] << "primitive node: "
+          << tIter->_Type << ":" << tIter->_Name);
 
       QList<QVariant> data =
           buildDataList(tIter->_Name,tIter->_Type,tIter->_Name + ":");
@@ -201,23 +202,23 @@ bool DataStructModel::processLinesIn(vector<std::string> &aLinesIn)
   bool tSuccess = _TopNodeItem->processLines(aLinesIn,aLineIter);
   if (tSuccess)
   {
-    std::cout << "successfully processed " << _TopNodeItem->getFieldName() << std::endl;
+    DEBUG(sLogger,"successfully processed " << _TopNodeItem->getFieldName());
   }
   else
   {
-    std::cout << "ERROR prorcessing: " << _TopNodeItem->getFieldName() << std::endl;
+    ERROR(sLogger,"Processing: " << _TopNodeItem->getFieldName());
   }
   return tSuccess;
 #if 0
   if (aLineIter->compare("struct"))
   {
-    std::cout << "ERROR: expected match for struct" << std::endl;
+    ERROR(sLogger,"Expected match for struct");
   }
   for (tIdx = 0; tIdx < _TopNodeItem->childCount(); tIdx++)
   {
     if (++aLineIter == aLinesIn.end())
     {
-      std::cout << "ERROR: ran out of lines to process"
+      ERROR(sLogger,"Ran out of lines to process"
       return false;
     }
     {
@@ -225,6 +226,13 @@ bool DataStructModel::processLinesIn(vector<std::string> &aLinesIn)
     }
   }
 #endif
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void DataStructModel::printInLines()
+{
+  _TopNodeItem->printInLines();
 }
 
 //-----------------------------------------------------------------------------
@@ -555,7 +563,7 @@ void DataStructModel::updateParentCheckState(
   }
   else
   {
-    std::cout << "updateParentCheckState(): all children DO NOT match" << std::endl;
+    DEBUG(sLogger,"updateParentCheckState(): all children DO NOT match");
     if (tParentItem->getCheckState() != Qt::PartiallyChecked)
     {
       tParentItem->setCheckState(Qt::PartiallyChecked);

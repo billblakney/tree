@@ -3,6 +3,8 @@
 #include "StreamReader.hh"
 #include "SimpleLineConsumer.hh"
 
+ccl::Logger StreamReader::sLogger("StreamReader");
+
 StreamReader::StreamReader(DataStructModel *aModel)
   : _DataStructModel(aModel)
 {
@@ -19,7 +21,6 @@ void StreamReader::run()
 //  while(true)
 //  {
 //    std::getline(std::cin,tInputLine);
-//    std::cout << tInputLine << std::endl;
 //    sleep(1);
 //  }
 
@@ -41,11 +42,12 @@ void StreamReader::run()
     {
       if (tLineBuffer.compare("start"))
       {
-        std::cout << "not starting" << std::endl;
+        DEBUG(sLogger,"didn't find start match");
       }
       else
       {
-        std::cout << "ready to start" << std::endl;
+        DEBUG(sLogger,"found start match");
+        std::cout << "=== start ===" << std::endl;
         tLookingForStart = false;
       }
     }
@@ -53,14 +55,18 @@ void StreamReader::run()
     {
       if (tLineBuffer.compare("end"))
       {
-        std::cout << "pushing back struct line" << std::endl;
+        DEBUG(sLogger,"pushing back struct line");
         tStructLines.push_back(tLineBuffer);
       }
       else
       {
-        std::cout << "reached end of structure" << std::endl;
-        _DataStructModel->processLinesIn(tStructLines);
+        DEBUG(sLogger,"reached end of structure");
+        if (_DataStructModel->processLinesIn(tStructLines))
+        {
+          _DataStructModel->printInLines();
+        }
         tStructLines.clear();
+        std::cout << "=== end ===" << std::endl;
         tLookingForStart = true;
       }
     }

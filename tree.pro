@@ -14,10 +14,13 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     QT += widgets
 }
 
+DEFINES += USE_LOG4CXX
+
 #Bill- LIBS += -L/usr/lib \
 LIBS += -L/opt/boost/lib -lboost_program_options \
         -L/usr/lib/x86_64-linux-gnu -lboost_regex \
-        ../structor/structor.so
+        -llog4cxx \ 
+        ../structor/structor.so \
 #        ../structor/Field.o \
 #        ../structor/main.o \
 #        ../structor/StructorBuilder.o \
@@ -30,6 +33,7 @@ HEADERS += \
            DataStructModel.hh \
            FieldItem.hh \
            LineConsumer.hh \
+           Logger.hh \
            MainWindow.hh \
            SimpleLineConsumer.hh \
            StreamReader.hh \
@@ -39,6 +43,7 @@ SOURCES += \
            DataStructModel.cc \
            FieldItem.cc \
            LineConsumer.cc \
+           Logger.cc \
            MainWindow.cc \
            SimpleLineConsumer.cc \
            StreamReader.cc \

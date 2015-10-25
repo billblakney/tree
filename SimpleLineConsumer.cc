@@ -67,13 +67,13 @@ bool SimpleLineConsumer::consume()
 //-----------------------------------------------------------------------------
 void SimpleLineConsumer::onMatch()
 {
-  std::cout << "match: " << _LineBuffer << std::endl;
+//  std::cout << "match: " << _LineBuffer << std::endl;
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void SimpleLineConsumer::onMismatch()
 {
-  std::cout << "MISMATCH: |" << _MatchString << "| didn't match |"
-      << _LineBuffer << "|" << std::endl;
+//  std::cout << "MISMATCH: |" << _MatchString << "| didn't match |"
+//      << _LineBuffer << "|" << std::endl;
 }

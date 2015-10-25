@@ -3,6 +3,7 @@
 
 #include <QThread>
 #include "DataStructModel.hh"
+#include "Logger.hh"
 
 class StreamReader: public QThread
 {
@@ -15,6 +16,7 @@ public slots:
   void run();
 
 protected:
+  static ccl::Logger sLogger;
   DataStructModel *_DataStructModel;
 };
 

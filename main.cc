@@ -4,6 +4,7 @@
 #include "MainWindow.hh"
 #include "SimpleLineConsumer.hh"
 #include "StreamReader.hh"
+#include "Logger.hh"
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
@@ -22,6 +23,8 @@ enum ReadState {eNone, eStarted, eEnded};
  *----------------------------------------------------------------------------*/
 int main(int argc, char *argv[])
 {
+  ccl::Logger::initialize();
+
   QApplication app(argc, argv);
 
   processCommandLine(argc,argv);
@@ -34,20 +37,6 @@ int main(int argc, char *argv[])
   window->setupView();
 
   DataStructModel *aModel = window->getStructDataModel();
-
-#if 0
-
-  SimpleLineConsumer tFieldConsumer(
-      std::cin,tLineBuffer,"field",false);
-
-  while (true)
-  {
-    tReceivedMessageConsumer.consume();
-    tFieldConsumer.consume();
-    tEndMessageConsumer.consume();
-  }
-
-#endif
   StreamReader *tStreamReader = new StreamReader(aModel);
   tStreamReader->start();
 

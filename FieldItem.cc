@@ -1,6 +1,8 @@
 #include <iostream>
 #include "FieldItem.hh"
 
+ccl::Logger FieldItem::sLogger("FieldItem");
+
 FieldItem::FieldItem(
     NodeType aType,const QList<QVariant> &aData,FieldItem *aParentItem,
         LineConsumer *aLineConsumer)
@@ -8,7 +10,8 @@ FieldItem::FieldItem(
     _Type(aType),
     _ItemData(aData),
     _CheckState(Qt::Unchecked),
-    _LineConsumer(aLineConsumer)
+    _LineConsumer(aLineConsumer),
+    _InLine("")
 {
 }
 
@@ -113,55 +116,76 @@ bool FieldItem::processLines(std::vector<std::string> &aLinesIn,
 {
   if (aLineIter == aLinesIn.end())
   {
-    std::cout << "ran out of lines in FieldItem::processLines" << std::endl;
+    ERROR(sLogger,"Ran out of lines in FieldItem::processLines");
     return false;
   }
 
   if ( _Type == eRoot )
   {
-    if (!(aLineIter++)->compare(getFieldMatch()))
+    std::string &tLine = *aLineIter;
+    aLineIter++;
+    if (!tLine.compare(getFieldMatch()))
     {
-      std::cout << "root|struct node match: " << getFieldMatch() << std::endl;
+      DEBUG(sLogger,"Root node match: " << getFieldMatch());
+      _InLine = tLine;
       for (int tIdx = 0; tIdx < childCount(); tIdx++)
       {
         bool tResult = child(tIdx)->processLines(aLinesIn,aLineIter);
         if (tResult == false)
         {
-          std::cout << "ERROR: processing child failed" << std::endl;
+          ERROR(sLogger,"Processing child failed");
           return false;
         }
       }
     }
     else
     {
-      std::cout << "ERROR: struct|root didn't match: " << getFieldMatch() << std::endl;
+      ERROR(sLogger,"Root didn't match: " << getFieldMatch());
       return false;
     }
   }
   if ( _Type == eStruct)
   {
+    _InLine = "";
     for (int tIdx = 0; tIdx < childCount(); tIdx++)
     {
       bool tResult = child(tIdx)->processLines(aLinesIn,aLineIter);
       if (tResult == false)
       {
-        std::cout << "ERROR: processing child failed" << std::endl;
+        ERROR(sLogger,"Processing child failed");
         return false;
       }
     }
   }
   else if (_Type == ePrimitive)
   {
-    if (!(aLineIter++)->compare(getFieldMatch()))
+    std::string &tLine = *aLineIter;
+    aLineIter++;
+    if (!tLine.compare(getFieldMatch()))
     {
-      std::cout << "primitive node matched: " << getFieldMatch() << std::endl;
+      _InLine = tLine;
+      DEBUG(sLogger,"primitive node matched: " << getFieldMatch());
     }
     else
     {
-      std::cout << "ERROR: primitive node didn't match: " << getFieldMatch() << std::endl;
+      ERROR(sLogger,"Primitive node didn't match: " << getFieldMatch());
       return false;
     }
   }
 
   return true;;
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+void FieldItem::printInLines()
+{
+  if (_InLine.size())
+  {
+    std::cout << _InLine << std::endl;
+  }
+  for (int tIdx = 0; tIdx < childCount(); tIdx++)
+  {
+    child(tIdx)->printInLines();
+  }
 }
