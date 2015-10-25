@@ -1,9 +1,8 @@
- start
- field1:
- field2:
- field3:
- field4:
-   field1:
-   field2:
-   field3:
+start
+struct
+field1:
+field2:
+field1:
+field2:
+field3:
 end

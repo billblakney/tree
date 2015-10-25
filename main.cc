@@ -35,49 +35,6 @@ int main(int argc, char *argv[])
 
   DataStructModel *aModel = window->getStructDataModel();
 
-  std::string tLineBuffer;
-
-  SimpleLineConsumer tReceivedMessageConsumer(
-      std::cin,tLineBuffer,"start",true);
-
-  SimpleLineConsumer tEndMessageConsumer(
-      std::cin,tLineBuffer,"end",false);
-
-  vector<std::string> tStructLines;
-
-  bool tLookingForStart = true;
-
-  while (std::getline(std::cin,tLineBuffer))
-  {
-    if (tLookingForStart)
-    {
-      if (tLineBuffer.compare("start"))
-      {
-        std::cout << "not starting" << std::endl;
-      }
-      else
-      {
-        std::cout << "ready to start" << std::endl;
-        tLookingForStart = false;
-      }
-    }
-    else
-    {
-      if (tLineBuffer.compare("end"))
-      {
-        std::cout << "pushing back struct line" << std::endl;
-        tStructLines.push_back(tLineBuffer);
-      }
-      else
-      {
-        std::cout << "reached end of structure" << std::endl;
-        aModel->processLinesIn(tStructLines);
-        tStructLines.clear();
-        tLookingForStart = true;
-      }
-    }
-  }
-
 #if 0
 
   SimpleLineConsumer tFieldConsumer(
@@ -90,9 +47,9 @@ int main(int argc, char *argv[])
     tEndMessageConsumer.consume();
   }
 
-//  StreamReader *tStreamReader = new StreamReader();
-//  tStreamReader->start();
 #endif
+  StreamReader *tStreamReader = new StreamReader(aModel);
+  tStreamReader->start();
 
   window->show();
   return app.exec();

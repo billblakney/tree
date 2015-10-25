@@ -199,7 +199,14 @@ bool DataStructModel::processLinesIn(vector<std::string> &aLinesIn)
 {
   vector<std::string>::iterator aLineIter = aLinesIn.begin();
   bool tSuccess = _TopNodeItem->processLines(aLinesIn,aLineIter);
-  std::cout << "successfully processed " << _TopNodeItem->getFieldName() << std::endl;
+  if (tSuccess)
+  {
+    std::cout << "successfully processed " << _TopNodeItem->getFieldName() << std::endl;
+  }
+  else
+  {
+    std::cout << "ERROR prorcessing: " << _TopNodeItem->getFieldName() << std::endl;
+  }
   return tSuccess;
 #if 0
   if (aLineIter->compare("struct"))
