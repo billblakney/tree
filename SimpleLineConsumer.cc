@@ -8,8 +8,7 @@
 //-----------------------------------------------------------------------------
 SimpleLineConsumer::SimpleLineConsumer(
     std::istream &aStream,std::string &aLineBuffer,std::string aMatchRegex,bool aContinueOnMismatch)
-  : _Stream(aStream),
-    _LineBuffer(aLineBuffer),
+  : LineConsumer(aStream,aLineBuffer),
     _MatchString(aMatchRegex),
     _ContinueOnMismatch(aContinueOnMismatch)
 {

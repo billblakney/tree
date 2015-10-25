@@ -29,6 +29,7 @@ INCLUDEPATH += ../structor
 HEADERS += \
            DataStructModel.hh \
            FieldItem.hh \
+           LineConsumer.hh \
            MainWindow.hh \
            SimpleLineConsumer.hh \
            StreamReader.hh \
@@ -37,6 +38,7 @@ SOURCES += \
            main.cc \
            DataStructModel.cc \
            FieldItem.cc \
+           LineConsumer.cc \
            MainWindow.cc \
            SimpleLineConsumer.cc \
            StreamReader.cc \

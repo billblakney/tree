@@ -1,9 +1,9 @@
 #ifndef SIMPLELINECONSUMER_HH_
 #define SIMPLELINECONSUMER_HH_
 
-#include <iostream>
+#include "LineConsumer.hh"
 
-class SimpleLineConsumer
+class SimpleLineConsumer : public LineConsumer
 {
 public:
 
@@ -12,6 +12,7 @@ public:
 
   virtual ~SimpleLineConsumer();
 
+  // @override
   bool consume();
 
   void onMatch();
@@ -20,8 +21,6 @@ public:
 
 protected:
 
-  std::istream &_Stream;
-  std::string  &_LineBuffer;
   std::string  _MatchString;
   bool         _ContinueOnMismatch;
 };

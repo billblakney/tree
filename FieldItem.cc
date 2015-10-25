@@ -2,11 +2,13 @@
 #include "FieldItem.hh"
 
 FieldItem::FieldItem(
-    NodeType aType,const QList<QVariant> &aData,FieldItem *aParentItem)
+    NodeType aType,const QList<QVariant> &aData,FieldItem *aParentItem,
+        LineConsumer *aLineConsumer)
   : _ParentItem(aParentItem),
     _Type(aType),
     _ItemData(aData),
-    _CheckState(Qt::Unchecked)
+    _CheckState(Qt::Unchecked),
+    _LineConsumer(aLineConsumer)
 {
 }
 
@@ -88,4 +90,11 @@ std::string FieldItem::getFieldType()
 std::string FieldItem::getFieldMatch()
 {
   return _ItemData.at(eMatchCol).toString().toStdString();
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+LineConsumer *FieldItem::getLineConsumer()
+{
+  return _LineConsumer;
 }

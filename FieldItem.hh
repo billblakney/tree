@@ -3,6 +3,7 @@
 
 #include <QList>
 #include <QVariant>
+#include "LineConsumer.hh"
 
 /**
  * FieldItem represents a node in the data structure tree.
@@ -13,9 +14,11 @@ public:
 
   enum Column {eNameCol, eTypeCol, eMatchCol};
 
-  enum NodeType {eNone, eRoot, ePrimitive, eStruct, ePrimitiveArrayPtr, eStructArrayPtr};
+  enum NodeType {eNone, eRoot, ePrimitive, eStruct, ePrimitiveArrayPtr,
+    eStructArrayPtr};
 
-  FieldItem(NodeType aType,const QList<QVariant> &aData,FieldItem *aParentItem = 0);
+  FieldItem(NodeType aType,const QList<QVariant> &aData,
+      FieldItem *aParentItem = 0,LineConsumer *aLineConsumer = 0);
 
   virtual ~FieldItem();
 
@@ -45,12 +48,16 @@ public:
 
   std::string getFieldMatch();
 
+  LineConsumer *getLineConsumer();
+
+
 private:
   FieldItem         *_ParentItem;
-  NodeType          _Type;
-  QList<QVariant>   _ItemData;
-  QList<FieldItem*> _ChildItems;
-  Qt::CheckState    _CheckState;
+  NodeType           _Type;
+  QList<QVariant>    _ItemData;
+  QList<FieldItem*>  _ChildItems;
+  Qt::CheckState     _CheckState;
+  LineConsumer      *_LineConsumer;
 
 };
 
