@@ -16,6 +16,8 @@ void processCommandLine(int argc,char *argv[])
    }
 }
 
+enum ReadState {eNone, eStarted, eEnded};
+
 /*------------------------------------------------------------------------------
  *----------------------------------------------------------------------------*/
 int main(int argc, char *argv[])
@@ -39,7 +41,44 @@ int main(int argc, char *argv[])
       std::cin,tLineBuffer,"start",true);
 
   SimpleLineConsumer tEndMessageConsumer(
-      std::cin,tLineBuffer,"end",true);
+      std::cin,tLineBuffer,"end",false);
+
+  vector<std::string> tStructLines;
+
+  bool tLookingForStart = true;
+
+  while (std::getline(std::cin,tLineBuffer))
+  {
+    if (tLookingForStart)
+    {
+      if (tLineBuffer.compare("start"))
+      {
+        std::cout << "not starting" << std::endl;
+      }
+      else
+      {
+        std::cout << "ready to start" << std::endl;
+        tLookingForStart = false;
+      }
+    }
+    else
+    {
+      if (tLineBuffer.compare("end"))
+      {
+        std::cout << "pushing back struct line" << std::endl;
+        tStructLines.push_back(tLineBuffer);
+      }
+      else
+      {
+        std::cout << "reached end of structure" << std::endl;
+        aModel->processLinesIn(tStructLines);
+        tStructLines.clear();
+        tLookingForStart = true;
+      }
+    }
+  }
+
+#if 0
 
   SimpleLineConsumer tFieldConsumer(
       std::cin,tLineBuffer,"field",false);
@@ -53,6 +92,7 @@ int main(int argc, char *argv[])
 
 //  StreamReader *tStreamReader = new StreamReader();
 //  tStreamReader->start();
+#endif
 
   window->show();
   return app.exec();

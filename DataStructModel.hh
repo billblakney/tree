@@ -24,6 +24,8 @@ public:
   QList<QVariant> buildDataList(
     const std::string aName,const std::string aType,std::string aMatch = "");
 
+  bool processLinesIn(std::vector<std::string> &aLinesIn);
+
   std::string getDotString(StructorBuilder *aStructBuilder,
     std::string aName,std::string aPrefix);
 
@@ -53,6 +55,7 @@ private:
   static QFont kArrayFont;
 
   FieldItem *_RootItem;
+  FieldItem *_TopNodeItem;
   void setupModelData() {}
   void setChildrenCheckStates(
       const QModelIndex &aParentIndex,Qt::CheckState aCheckState);

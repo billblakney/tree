@@ -86,10 +86,15 @@ std::string FieldItem::getFieldType()
 }
 
 //-------------------------------------------------------------------------------
+// TODO?
 //-------------------------------------------------------------------------------
 std::string FieldItem::getFieldMatch()
 {
-  return _ItemData.at(eMatchCol).toString().toStdString();
+  if (_Type != eStruct)
+  {
+    return _ItemData.at(eMatchCol).toString().toStdString();
+  }
+  return std::string("");
 }
 
 //-------------------------------------------------------------------------------
@@ -97,4 +102,66 @@ std::string FieldItem::getFieldMatch()
 LineConsumer *FieldItem::getLineConsumer()
 {
   return _LineConsumer;
+}
+
+//-------------------------------------------------------------------------------
+//  enum NodeType {eNone, eRoot, ePrimitive, eStruct, ePrimitiveArrayPtr,
+//    eStructArrayPtr};
+//-------------------------------------------------------------------------------
+bool FieldItem::processLines(std::vector<std::string> &aLinesIn,
+      std::vector<std::string>::iterator &aLineIter)
+{
+  if (aLineIter == aLinesIn.end())
+  {
+    std::cout << "ran out of lines in FieldItem::processLines" << std::endl;
+    return false;
+  }
+
+  if ( _Type == eRoot )
+  {
+    if (!(aLineIter++)->compare(getFieldMatch()))
+    {
+      std::cout << "root|struct node match: " << getFieldMatch() << std::endl;
+      for (int tIdx = 0; tIdx < childCount(); tIdx++)
+      {
+        bool tResult = child(tIdx)->processLines(aLinesIn,aLineIter);
+        if (tResult == false)
+        {
+          std::cout << "ERROR: processing child failed" << std::endl;
+          return false;
+        }
+      }
+    }
+    else
+    {
+      std::cout << "ERROR: struct|root didn't match: " << getFieldMatch() << std::endl;
+      return false;
+    }
+  }
+  if ( _Type == eStruct)
+  {
+    for (int tIdx = 0; tIdx < childCount(); tIdx++)
+    {
+      bool tResult = child(tIdx)->processLines(aLinesIn,aLineIter);
+      if (tResult == false)
+      {
+        std::cout << "ERROR: processing child failed" << std::endl;
+        return false;
+      }
+    }
+  }
+  else if (_Type == ePrimitive)
+  {
+    if (!(aLineIter++)->compare(getFieldMatch()))
+    {
+      std::cout << "primitive node matched: " << getFieldMatch() << std::endl;
+    }
+    else
+    {
+      std::cout << "ERROR: primitive node didn't match: " << getFieldMatch() << std::endl;
+      return false;
+    }
+  }
+
+  return true;;
 }

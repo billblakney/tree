@@ -7,9 +7,6 @@ typedef struct {
 typedef struct {
    int field1;
    int field2;
-   int field3;
-   int field4;
-   int field5;
-   INNER_T field9;
+   INNER_T field3;
 } OUTER_T;
 

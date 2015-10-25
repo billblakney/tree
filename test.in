@@ -1,24 +1,9 @@
- =====REVEIVED MESSAGE=====
-field
- =====END MESSAGE=====
- =====REVEIVED MESSAGE=====
-field
- =====END MESSAGE=====
- =====REVEIVED MESSAGE=====
-field
- =====END MESSAGE=====
- =====REVEIVED MESSAGE=====
-field
- =====END MESSAGE=====
- =====REVEIVED MESSAGE=====
-field
- =====END MESSAGE=====
- =====REVEIVED MESSAGE=====
-field
- =====END MESSAGE=====
- =====REVEIVED MESSAGE=====
-field
- =====END MESSAGE=====
- =====REVEIVED MESSAGE=====
-field
- =====END MESSAGE=====
+ start
+ field1:
+ field2:
+ field3:
+ field4:
+   field1:
+   field2:
+   field3:
+end

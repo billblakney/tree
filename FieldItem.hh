@@ -1,6 +1,9 @@
 #ifndef FIELDITEM_HH_
 #define FIELDITEM_HH_
 
+#include <iterator>
+#include <string>
+#include <vector>
 #include <QList>
 #include <QVariant>
 #include "LineConsumer.hh"
@@ -49,6 +52,9 @@ public:
   std::string getFieldMatch();
 
   LineConsumer *getLineConsumer();
+
+  bool processLines(std::vector<std::string> &aLinesIn,
+      std::vector<std::string>::iterator &aLineIter);
 
 
 private:

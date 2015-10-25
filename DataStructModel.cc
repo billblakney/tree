@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iterator>
 #include <sstream>
 #include <boost/regex.hpp>
 #include <QVariant>
@@ -10,26 +11,26 @@ QFont DataStructModel::kArrayFont;
 //-------------------------------------------------------------------------------
 DataStructModel::DataStructModel(
     Structure *aStructure,StructorBuilder *aStructBuilder)
+  : _RootItem(0),
+    _TopNodeItem(0)
 {
   kArrayFont.setItalic(true);
 
   // root item
-  QList<QVariant> aRootData =
-      buildDataList(aStructure->_Name,aStructure->_Name);
+  QList<QVariant> aRootData = buildDataList(aStructure->_Name,aStructure->_Name);
   _RootItem = new FieldItem(FieldItem::eRoot,aRootData);
 
   // top node item
   QList<QVariant> aTopNodeData =
       buildDataList("struct",aStructure->_Name,"struct");
-  FieldItem *topNodeItem =
-      new FieldItem(FieldItem::eRoot,aTopNodeData,_RootItem);
+  _TopNodeItem = new FieldItem(FieldItem::eRoot,aTopNodeData,_RootItem);
 
-  _RootItem->appendChild(topNodeItem);
+  _RootItem->appendChild(_TopNodeItem);
 
-  buildTree(topNodeItem,aStructure,aStructBuilder);
+  buildTree(_TopNodeItem,aStructure,aStructBuilder);
 
 cout << getDotString(aStructBuilder,aStructure->_Name,"aStruct") << endl;
-cout << getMatchString(topNodeItem) << endl;
+cout << getMatchString(_TopNodeItem) << endl;
 }
 
 //-------------------------------------------------------------------------------
@@ -187,6 +188,33 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
     else
     {
       tReturn << tFieldString << endl;
+    }
+  }
+#endif
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+bool DataStructModel::processLinesIn(vector<std::string> &aLinesIn)
+{
+  vector<std::string>::iterator aLineIter = aLinesIn.begin();
+  bool tSuccess = _TopNodeItem->processLines(aLinesIn,aLineIter);
+  std::cout << "successfully processed " << _TopNodeItem->getFieldName() << std::endl;
+  return tSuccess;
+#if 0
+  if (aLineIter->compare("struct"))
+  {
+    std::cout << "ERROR: expected match for struct" << std::endl;
+  }
+  for (tIdx = 0; tIdx < _TopNodeItem->childCount(); tIdx++)
+  {
+    if (++aLineIter == aLinesIn.end())
+    {
+      std::cout << "ERROR: ran out of lines to process"
+      return false;
+    }
+    {
+      _TopNodeItem->child(tIdx)->processLine(aLineIter);
     }
   }
 #endif
