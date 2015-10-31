@@ -10,10 +10,7 @@ class RecordWriter
 public:
   RecordWriter();
   virtual ~RecordWriter();
-  virtual void process(std::vector<std::string> &aRecordStrings);
-  void setLineMatcher(LineMatcher *aMatcher);
-protected:
-  LineMatcher *_LineMatcher;
+  virtual void process(std::vector<std::string> &aRecordStrings) = 0;
 };
 
 #endif /* RECORDWRITER_HH_ */

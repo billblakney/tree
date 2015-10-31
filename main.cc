@@ -2,8 +2,6 @@
 #include <unistd.h>
 #include <QApplication>
 #include "MainWindow.hh"
-#include "SimpleLineConsumer.hh"
-#include "StreamReader.hh"
 #include "Logger.hh"
 
 //-------------------------------------------------------------------------------
@@ -29,17 +27,14 @@ int main(int argc, char *argv[])
 
   processCommandLine(argc,argv);
 
-  bool tLaunchGUI = false;
+//  bool tLaunchGUI = false;
 
+std::cout << "creating main window" << std::endl;
   MainWindow *window = new MainWindow(argc,argv,app,0);
-
   window->setGeometry(2450,135,625,900);
   window->setupView();
 
-  DataStructModel *aModel = window->getStructDataModel();
-  StreamReader *tStreamReader = new StreamReader(aModel);
-  tStreamReader->start();
-
+std::cout << "showing window" << std::endl;
   window->show();
   return app.exec();
 }

@@ -1,6 +1,7 @@
 #ifndef STREAMREADER_HH_
 #define STREAMREADER_HH_
 
+#include <QMutex>
 #include <QThread>
 #include "DataStructModel.hh"
 #include "Logger.hh"
@@ -8,11 +9,12 @@
 
 class StreamReader: public QThread
 {
+  Q_OBJECT;
 public:
-  std::vector<RecordWriter *> _Writers;
-
   StreamReader(DataStructModel *aModel);
+  StreamReader(RecordWriter *aWriter);
   virtual ~StreamReader();
+  void setRecordWriter(RecordWriter *aWriter);
 
 public slots:
 
@@ -20,7 +22,10 @@ public slots:
 
 protected:
   static ccl::Logger sLogger;
+
+  std::vector<RecordWriter *> _Writers;
   DataStructModel *_DataStructModel;
+  QMutex _Mutex;
 };
 
 #endif /* STREAMREADER_HH_ */

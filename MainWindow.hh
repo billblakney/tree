@@ -8,6 +8,8 @@
 #include <QWidget>
 #include "StructorBuilder.hh"
 #include "DataStructModel.hh"
+#include "SimpleRecordWriter.hh"
+#include "StreamReader.hh"
 
 class MainWindow: public QWidget
 {
@@ -26,6 +28,7 @@ public:
 public slots:
 
   void onStructComboBoxActivated(int index);
+  void onSetFilterClicked(bool);
 
 protected:
 
@@ -40,9 +43,14 @@ protected:
 	QComboBox       *_StructComboBox;
 	QTreeView       *_StructTree;
 
+  SimpleRecordWriter *_Writer;
+  StreamReader *_StreamReader;
+
 	void setTreeViewStruct(std::string aStructName);
 
 	QStringList convertToQStringList(std::vector<std::string> aStrings);
+
+	std::string getMatchString();
 };
 
 #endif /* MAINWINDOW_HH_ */

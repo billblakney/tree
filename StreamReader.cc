@@ -5,26 +5,39 @@
 
 ccl::Logger StreamReader::sLogger("StreamReader");
 
+// TODO obsolete
 StreamReader::StreamReader(DataStructModel *aModel)
-  : _Writers(0),
-    _DataStructModel(aModel)
+  : _DataStructModel(aModel)
 {
-  _Writers.push_back(new RecordWriter());
+}
+
+StreamReader::StreamReader(RecordWriter *aWriter)
+{
+  _Mutex.lock();
+  setRecordWriter(aWriter);
+  _Mutex.unlock();
 }
 
 StreamReader::~StreamReader()
 {
 }
 
+// TODO mem leak
+void StreamReader::setRecordWriter(RecordWriter *aWriter)
+{
+  if (_Writers.size() == 0)
+  {
+    _Writers.push_back(aWriter);
+  }
+  else
+  {
+    _Writers[0] = aWriter;
+  }
+}
+
 void StreamReader::run()
 {
   std::string tInputLine;
-
-//  while(true)
-//  {
-//    std::getline(std::cin,tInputLine);
-//    sleep(1);
-//  }
 
   std::string tLineBuffer;
 
@@ -63,7 +76,7 @@ void StreamReader::run()
       else
       {
         DEBUG(sLogger,"reached end of structure");
-#define USE_OLD
+//#define USE_OLD
 #ifdef USE_OLD
         if (_DataStructModel->processLinesIn(tStructLines))
         {
