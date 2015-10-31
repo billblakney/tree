@@ -4,6 +4,7 @@
 #include <QThread>
 #include "DataStructModel.hh"
 #include "Logger.hh"
+#include "RecordWriter.hh"
 
 class StreamReader: public QThread
 {
@@ -17,6 +18,7 @@ public slots:
 
 protected:
   static ccl::Logger sLogger;
+  std::vector<RecordWriter *> _Writers;
   DataStructModel *_DataStructModel;
 };
 

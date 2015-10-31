@@ -33,8 +33,10 @@ HEADERS += \
            DataStructModel.hh \
            FieldItem.hh \
            LineConsumer.hh \
+           LineMatcher.hh \
            Logger.hh \
            MainWindow.hh \
+           RecordWriter.hh \
            SimpleLineConsumer.hh \
            StreamReader.hh \
 
@@ -43,7 +45,9 @@ SOURCES += \
            DataStructModel.cc \
            FieldItem.cc \
            LineConsumer.cc \
+           LineMatcher.cc \
            Logger.cc \
            MainWindow.cc \
+           RecordWriter.cc \
            SimpleLineConsumer.cc \
            StreamReader.cc \

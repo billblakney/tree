@@ -6,8 +6,10 @@
 ccl::Logger StreamReader::sLogger("StreamReader");
 
 StreamReader::StreamReader(DataStructModel *aModel)
-  : _DataStructModel(aModel)
+  : _DataStructModel(aModel),
+    _Writers(0)
 {
+  _Writers.push_back(new RecordWriter());
 }
 
 StreamReader::~StreamReader()
@@ -61,10 +63,19 @@ void StreamReader::run()
       else
       {
         DEBUG(sLogger,"reached end of structure");
+#define USE_OLD
+#ifdef USE_OLD
         if (_DataStructModel->processLinesIn(tStructLines))
         {
           _DataStructModel->printInLines();
         }
+#else
+        std::vector<RecordWriter *>::iterator tIt;
+        for (tIt = _Writers.begin(); tIt != _Writers.end(); tIt++)
+        {
+          (*tIt)->process(tStructLines);
+        }
+#endif
         tStructLines.clear();
         std::cout << "=== end ===" << std::endl;
         tLookingForStart = true;
