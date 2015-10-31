@@ -100,12 +100,15 @@ void MainWindow::setupView()
    btn3.numCycles = BaseIconButton::numClassifications;
 #endif
 
+   QPushButton *tButton = new QPushButton("Set Filter",this);
+
    //-------------------------
    // Put widgets in the dialog using box layout.
    //-------------------------
    QVBoxLayout *layout = new QVBoxLayout;
    layout->addWidget(_StructComboBox);
    layout->addWidget(_StructTree);
+   layout->addWidget(tButton);
 #if 0
    layout->addWidget(&btn1);
    layout->addWidget(&btn2);

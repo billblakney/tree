@@ -6,8 +6,8 @@
 ccl::Logger StreamReader::sLogger("StreamReader");
 
 StreamReader::StreamReader(DataStructModel *aModel)
-  : _DataStructModel(aModel),
-    _Writers(0)
+  : _Writers(0),
+    _DataStructModel(aModel)
 {
   _Writers.push_back(new RecordWriter());
 }

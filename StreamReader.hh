@@ -9,6 +9,8 @@
 class StreamReader: public QThread
 {
 public:
+  std::vector<RecordWriter *> _Writers;
+
   StreamReader(DataStructModel *aModel);
   virtual ~StreamReader();
 
@@ -18,7 +20,6 @@ public slots:
 
 protected:
   static ccl::Logger sLogger;
-  std::vector<RecordWriter *> _Writers;
   DataStructModel *_DataStructModel;
 };
 
