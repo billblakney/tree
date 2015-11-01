@@ -61,7 +61,7 @@ void MainWindow::setupView()
                        this, SLOT(onStructComboBoxActivated(int)));
 
   // Create structure tree view.
-  _StructTree = new QTreeView(this);
+  _StructTree = new StructTreeView(this);
   setTreeViewStruct(_InitialStruct);
   _StructTree->header()->resizeSection(0,325);
 
@@ -140,12 +140,6 @@ void MainWindow::onStructComboBoxActivated(int index)
 
 void MainWindow::onSetFilterClicked(bool)
 {
-  std::string tMatchString = getMatchString();
+  std::string tMatchString = _DataStructModel->getMatchString();
   _Writer->setMatchRegex(tMatchString);
-}
-
-std::string MainWindow::getMatchString()
-{
-  std::string tString = ".*field1.*";
-  return tString;
 }

@@ -300,6 +300,55 @@ std::string DataStructModel::getMatchString(FieldItem *aFieldItem)
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
+std::string DataStructModel::getMatchString()
+{
+  std::string tMatchString(".*");
+
+  std::vector<FieldItem *> tCheckedFieldItems = getCheckedFields();
+  int tNumCheckFields = tCheckedFieldItems.size();
+  if (tNumCheckFields > 0)
+  {
+    tMatchString.clear();
+    for (int tIdx = 0; tIdx < tNumCheckFields; tIdx++)
+    {
+      if (tIdx != 0)
+      {
+        tMatchString += "|";
+      }
+      tMatchString += tCheckedFieldItems[tIdx]->getFieldName();
+      tMatchString += ":";
+    }
+  }
+std::cout << "tMatchString: " << tMatchString << std::endl;
+  return tMatchString;
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+std::vector<FieldItem *> DataStructModel::getCheckedFields()
+{
+  std::vector<FieldItem *> tFieldItems;
+  addCheckedFields(_TopNodeItem,tFieldItems);
+  return tFieldItems;
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+void DataStructModel::addCheckedFields(
+    FieldItem *aNode,std::vector<FieldItem *> &aFieldItems)
+{
+  if (aNode->getCheckState() == Qt::Checked)
+  {
+    aFieldItems.push_back(aNode);
+  }
+  for (int tIdx = 0; tIdx < aNode->childCount(); tIdx++)
+  {
+    addCheckedFields(aNode->child(tIdx),aFieldItems);
+  }
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 QVariant DataStructModel::data(const QModelIndex &index,int role) const
 {
   if (!index.isValid())

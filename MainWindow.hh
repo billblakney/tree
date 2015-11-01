@@ -4,12 +4,12 @@
 #include <string>
 #include <QComboBox>
 #include <QStringList>
-#include <QTreeView>
 #include <QWidget>
 #include "StructorBuilder.hh"
 #include "DataStructModel.hh"
 #include "SimpleRecordWriter.hh"
 #include "StreamReader.hh"
+#include "StructTreeView.hh"
 
 class MainWindow: public QWidget
 {
@@ -41,7 +41,7 @@ protected:
 	DataStructModel *_DataStructModel;
 
 	QComboBox       *_StructComboBox;
-	QTreeView       *_StructTree;
+	StructTreeView  *_StructTree;
 
   SimpleRecordWriter *_Writer;
   StreamReader *_StreamReader;

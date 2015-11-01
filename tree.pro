@@ -41,6 +41,7 @@ HEADERS += \
            SimpleRecordWriter.hh \
 #           SimpleLineMatcher.hh \
            StreamReader.hh \
+           StructTreeView.hh \
 
 SOURCES += \
            main.cc \
@@ -55,3 +56,4 @@ SOURCES += \
            SimpleRecordWriter.cc \
 #           SimpleLineMatcher.cc \
            StreamReader.cc \
+           StructTreeView.cc \

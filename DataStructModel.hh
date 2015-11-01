@@ -34,6 +34,13 @@ public:
 
   std::string getMatchString(FieldItem *aFieldItem);
 
+  std::string getMatchString();
+
+  std::vector<FieldItem *> getCheckedFields();
+
+  void addCheckedFields(
+      FieldItem *aNode,std::vector<FieldItem *> &aFieldItems);
+
   QVariant data(const QModelIndex &index,int role) const;
 
   bool setData(const QModelIndex &index,const QVariant &value,
