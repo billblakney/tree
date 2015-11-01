@@ -19,22 +19,27 @@ DEFINES += USE_LOG4CXX
 #Bill- LIBS += -L/usr/lib \
 LIBS += -L/opt/boost/lib -lboost_program_options \
         -L/usr/lib/x86_64-linux-gnu -lboost_regex \
-        -llog4cxx \ 
         ../structor/structor.so \
 #        ../structor/Field.o \
 #        ../structor/main.o \
 #        ../structor/StructorBuilder.o \
 #        ../structor/Structure.o \
 
+equals(QT_MAJOR_VERSION, 4) {
+    LIBS += -L/${LIB_DIR} -lIecCommonLogger
+}
+greaterThan(QT_MAJOR_VERSION, 4) {
+    LIBS += -llog4cxx
+}
+
 INCLUDEPATH += ../structor
+INCLUDEPATH += /opt/log4cxx-0.10.0/include
 
 # Input
 HEADERS += \
            DataStructModel.hh \
            FieldItem.hh \
            LineConsumer.hh \
-#           LineMatcher.hh \
-           Logger.hh \
            MainWindow.hh \
            RecordWriter.hh \
            SimpleLineConsumer.hh \
@@ -48,8 +53,6 @@ SOURCES += \
            DataStructModel.cc \
            FieldItem.cc \
            LineConsumer.cc \
-#           LineMatcher.cc \
-           Logger.cc \
            MainWindow.cc \
            RecordWriter.cc \
            SimpleLineConsumer.cc \
@@ -57,3 +60,9 @@ SOURCES += \
 #           SimpleLineMatcher.cc \
            StreamReader.cc \
            StructTreeView.cc \
+
+# not really the right test, but...
+greaterThan(QT_MAJOR_VERSION, 4) {
+    HEADERS += Logger.hh
+    SOURCES += Logger.cc
+}
