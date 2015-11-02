@@ -13,6 +13,15 @@
 class DataStructModel : public QAbstractItemModel
 {
 public:
+
+  enum ColumnId {
+    eColFieldName = 0,
+    eColFieldType,
+    eColMatchRegex,
+    eColPostfix,
+    eNumColumns
+  };
+
   DataStructModel(Structure *aStructure);
   virtual ~DataStructModel();
 

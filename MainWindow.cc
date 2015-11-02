@@ -63,7 +63,7 @@ void MainWindow::setupView()
   // Create structure tree view.
   _StructTree = new StructTreeView(this);
   setTreeViewStruct(_InitialStruct);
-  _StructTree->header()->resizeSection(0,325);
+  _StructTree->header()->resizeSection(0,225);
 
 // TODO works form 4.8 on
 #ifdef EXPAND_ALL

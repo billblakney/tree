@@ -245,6 +245,7 @@ QList<QVariant> DataStructModel::buildDataList(
   tList.append(QVariant(aName.c_str()));
   tList.append(QVariant(aType.c_str()));
   tList.append(QVariant(aMatch.c_str()));
+  tList.append(QVariant(QString("newline (\"\\n\")")));
 
   return tList;
 }
@@ -363,7 +364,7 @@ QVariant DataStructModel::data(const QModelIndex &index,int role) const
       return item->data(index.column());
       break;
     case Qt::CheckStateRole:
-      if (index.column() == 0)
+      if (index.column() == eColFieldName)
       {
         return static_cast<int>(item->getCheckState());
       }
@@ -391,7 +392,7 @@ QVariant DataStructModel::data(const QModelIndex &index,int role) const
 bool DataStructModel::setData(
     const QModelIndex &index,const QVariant &value,int role)
 {
-  if( role == Qt::CheckStateRole && index.column() == 0)
+  if( role == Qt::CheckStateRole && index.column() == eColFieldName)
   {
     FieldItem *item = static_cast<FieldItem*>(index.internalPointer());
 
@@ -430,9 +431,14 @@ Qt::ItemFlags DataStructModel::flags(const QModelIndex &index) const
 
   Qt::ItemFlags tFlags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 
-  if (index.column() == 0)
+  if (index.column() == eColFieldName)
   {
     tFlags |= Qt::ItemIsUserCheckable;
+  }
+
+  if (index.column() == eColMatchRegex || index.column() == eColPostfix)
+  {
+    tFlags |= Qt::ItemIsEditable;
   }
 
   return tFlags;
@@ -445,13 +451,21 @@ QVariant DataStructModel::headerData(int section,Qt::Orientation orientation,
 {
   if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
   {
-    if (section == 0)
+    if (section == eColFieldName)
     {
       return QVariant("Field Name");
     }
-    else if (section == 1)
+    else if (section == eColFieldType)
     {
       return QVariant("Field Type");
+    }
+    else if (section == eColMatchRegex)
+    {
+      return QVariant("Match Regex");
+    }
+    else if (section == eColPostfix)
+    {
+      return QVariant("Postfix");
     }
   }
 
@@ -515,7 +529,7 @@ QModelIndex DataStructModel::parent(const QModelIndex &index) const
 int DataStructModel::rowCount(const QModelIndex &parent) const
 {
   FieldItem *parentItem;
-  if (parent.column() > 0)
+  if (parent.column() > 0) // what's purpose of this test?
   {
     return 0;
   }
