@@ -392,7 +392,10 @@ QVariant DataStructModel::data(const QModelIndex &index,int role) const
 bool DataStructModel::setData(
     const QModelIndex &index,const QVariant &value,int role)
 {
-  if( role == Qt::CheckStateRole && index.column() == eColFieldName)
+  int aRow = index.row();
+  int aCol = index.column();
+
+  if( role == Qt::CheckStateRole && aCol == eColFieldName)
   {
     FieldItem *item = static_cast<FieldItem*>(index.internalPointer());
 
@@ -416,6 +419,20 @@ bool DataStructModel::setData(
     }
 
     updateParentCheckState(index,tNewState);
+  }
+  else if (role == Qt::EditRole)
+  {
+    FieldItem *item = static_cast<FieldItem*>(index.internalPointer());
+    if (aCol ==  eColMatchRegex)
+    {
+      item->setFieldMatch(value);
+      emit dataChanged(index,index);
+    }
+    else if (aCol == eColPostfix)
+    {
+      item->setFieldPostfix(value);
+      emit dataChanged(index,index);
+    }
   }
   return true;
 }

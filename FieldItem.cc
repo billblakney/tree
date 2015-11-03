@@ -74,6 +74,16 @@ void FieldItem::setCheckState(Qt::CheckState aCheckState)
   _CheckState = aCheckState;
 }
 
+void FieldItem::setFieldMatch(const QVariant &aValue)
+{
+  _ItemData[eMatchCol] = QVariant(QString(aValue.toString()));
+}
+
+void FieldItem::setFieldPostfix(const QVariant &aValue)
+{
+  _ItemData[ePostfixCol] = aValue;
+}
+
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
 std::string FieldItem::getFieldName()

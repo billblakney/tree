@@ -16,7 +16,7 @@ class FieldItem
 {
 public:
 
-  enum Column {eNameCol, eTypeCol, eMatchCol};
+  enum Column {eNameCol, eTypeCol, eMatchCol, ePostfixCol};
 
   enum NodeType {eNone, eRoot, ePrimitive, eStruct, ePrimitiveArrayPtr,
     eStructArrayPtr};
@@ -45,6 +45,10 @@ public:
   Qt::CheckState getCheckState();
 
   void setCheckState(Qt::CheckState aCheckState);
+
+  void setFieldMatch(const QVariant & value);
+
+  void setFieldPostfix(const QVariant & value);
 
   std::string getFieldName();
 
