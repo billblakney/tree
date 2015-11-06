@@ -23,7 +23,7 @@ DataStructModel::DataStructModel(
   _RootItem = new FieldItem(tRootFieldItemData);
 
   // top node item
-  FieldItemData tTopFieldItemData(FieldItemData::eRoot,"struct",aStructure->_Name,"^struct$");
+  FieldItemData tTopFieldItemData(FieldItemData::eRoot,"struct",aStructure->_Name);
   _TopNodeItem = new FieldItem(tTopFieldItemData,_RootItem);
 
   _RootItem->appendChild(_TopNodeItem);
@@ -93,6 +93,14 @@ std::string DataStructModel::buildMatchForStructArrayField(const Field &aField,i
 std::string DataStructModel::buildMatchForStructField(const Field &aField,int aIndentLevel)
 {
   return buildMatchForField(aField,aIndentLevel);
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+std::string DataStructModel::getFirstFieldMatch()
+{
+  std::cout << "top children: " << _TopNodeItem->childCount() << std::endl;
+  return _TopNodeItem->child(0)->getData().getMatch();
 }
 
 //-------------------------------------------------------------------------------

@@ -34,6 +34,8 @@ public:
   std::string buildMatchForPrimitiveField(const Field &aField,int aIndentLevel);
   std::string buildMatchForStructArrayField(const Field &aField,int aIndentLevel);
 
+  std::string getFirstFieldMatch();
+
   void buildTree(FieldItem *rootItem,Structure *aStructure,
       StructorBuilder *aStructBuilder,int aLevel = 0);
 

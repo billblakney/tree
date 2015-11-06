@@ -11,8 +11,7 @@ class StreamReader: public QThread
 {
   Q_OBJECT;
 public:
-  StreamReader(DataStructModel *aModel);
-  StreamReader(RecordWriter *aWriter);
+  StreamReader(DataStructModel *aModel,RecordWriter *aWriter);
   virtual ~StreamReader();
   void setRecordWriter(RecordWriter *aWriter);
 

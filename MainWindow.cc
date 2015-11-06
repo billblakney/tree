@@ -96,7 +96,7 @@ std::cout << "creating writer" << std::endl;
 
 //  StreamReader *tStreamReader = new StreamReader(aModel);
 std::cout << "creating stream reader" << std::endl;
-  _StreamReader = new StreamReader(_Writer);
+  _StreamReader = new StreamReader(_DataStructModel,_Writer);
   _StreamReader->start();
 }
 

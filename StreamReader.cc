@@ -5,13 +5,8 @@
 
 ccl::Logger StreamReader::sLogger("StreamReader");
 
-// TODO obsolete
-StreamReader::StreamReader(DataStructModel *aModel)
+StreamReader::StreamReader(DataStructModel *aModel,RecordWriter *aWriter)
   : _DataStructModel(aModel)
-{
-}
-
-StreamReader::StreamReader(RecordWriter *aWriter)
 {
   _Mutex.lock();
   setRecordWriter(aWriter);
@@ -51,20 +46,25 @@ void StreamReader::run()
 
   SimpleLineMatcher tBeginMessageMatcher(".*===RECEIVED MESSAGE===.*");
   SimpleLineMatcher tEndMessageMatcher(".*===END MESSAGE===.*");
+DEBUG(sLogger,"getting tFirstFieldMatch");
+  std::string tFirstFieldMatch = _DataStructModel->getFirstFieldMatch();
+DEBUG(sLogger,"tFirstFieldMatch: " << tFirstFieldMatch);
+  SimpleLineMatcher tFirstFieldMatcher(tFirstFieldMatch);
 
   vector<std::string> tStructLines;
 
-  bool tLookingForStart = true;
+  bool tFoundStart = false;
+  bool tFoundFirstField = false;
 
   while (std::getline(std::cin,tLineBuffer))
   {
-    if (tLookingForStart)
+    if (!tFoundStart)
     {
       if (tBeginMessageMatcher.match(tLineBuffer) )
       {
         DEBUG(sLogger,"found start match");
         std::cout << "=== start ===" << std::endl;
-        tLookingForStart = false;
+        tFoundStart = true;
       }
       else
       {
@@ -75,6 +75,18 @@ void StreamReader::run()
     {
       if (!tEndMessageMatcher.match(tLineBuffer) )
       {
+        if (!tFoundFirstField)
+        {
+          if (tFirstFieldMatcher.match(tLineBuffer))
+          {
+            tFoundFirstField = true;
+          }
+          else
+          {
+            DEBUG(sLogger,"discarding: " << tLineBuffer);
+            continue;
+          }
+        }
         DEBUG(sLogger,"pushing back struct line");
         tStructLines.push_back(tLineBuffer);
       }
@@ -96,7 +108,8 @@ void StreamReader::run()
 #endif
         tStructLines.clear();
         std::cout << "=== end ===" << std::endl;
-        tLookingForStart = true;
+        tFoundStart = false;
+        tFoundFirstField = false;
       }
     }
   }
