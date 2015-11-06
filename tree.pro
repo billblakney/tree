@@ -16,6 +16,8 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 
 DEFINES += USE_LOG4CXX
 
+include( $(AXB_PROJECT_PRI) )
+
 #Bill- LIBS += -L/usr/lib \
 LIBS += -L/opt/boost/lib -lboost_program_options \
         -L/usr/lib/x86_64-linux-gnu -lboost_regex \
@@ -39,6 +41,7 @@ INCLUDEPATH += /opt/log4cxx-0.10.0/include
 HEADERS += \
            DataStructModel.hh \
            FieldItem.hh \
+           FieldItemData.hh \
            LineConsumer.hh \
            MainWindow.hh \
            RecordWriter.hh \
@@ -53,6 +56,7 @@ SOURCES += \
            main.cc \
            DataStructModel.cc \
            FieldItem.cc \
+           FieldItemData.cc \
            LineConsumer.cc \
            MainWindow.cc \
            RecordWriter.cc \

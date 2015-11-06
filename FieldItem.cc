@@ -3,38 +3,56 @@
 
 ccl::Logger FieldItem::sLogger("FieldItem");
 
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 FieldItem::FieldItem(
-    NodeType aType,const QList<QVariant> &aData,FieldItem *aParentItem,
-        LineConsumer *aLineConsumer)
+    NodeType aType,const QList<QVariant> &aData,FieldItem *aParentItem)
   : _ParentItem(aParentItem),
     _Type(aType),
     _ItemData(aData),
     _CheckState(Qt::Unchecked),
-    _LineConsumer(aLineConsumer),
     _InLine("")
 {
 }
 
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+FieldItem::FieldItem(FieldItemData aData,FieldItem *aParentItem)
+  : _ParentItem(aParentItem)
+{
+  _FieldItemData = aData;
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 FieldItem::~FieldItem()
 {
   qDeleteAll(_ChildItems);
 }
 
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 void FieldItem::appendChild(FieldItem *item)
 {
   _ChildItems.append(item);
 }
 
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 FieldItem *FieldItem::child(int row)
 {
   return _ChildItems.value(row);
 }
 
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 int FieldItem::childCount() const
 {
   return _ChildItems.count();
 }
 
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 int FieldItem::row() const
 {
   if( _ParentItem )
@@ -44,44 +62,39 @@ int FieldItem::row() const
   return 0;
 }
 
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 int FieldItem::columnCount() const
 {
   return _ItemData.count();
 }
 
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 QVariant FieldItem::data(int column) const
 {
   return _ItemData.value(column);
 }
 
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 FieldItem *FieldItem::parentItem() const
 {
   return _ParentItem;
 }
 
-FieldItem::NodeType FieldItem::getType() const
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+FieldItem::NodeType FieldItem::getNodeType() const
 {
   return _Type;
 }
 
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 Qt::CheckState FieldItem::getCheckState()
 {
   return _CheckState;
-}
-
-void FieldItem::setCheckState(Qt::CheckState aCheckState)
-{
-  _CheckState = aCheckState;
-}
-
-void FieldItem::setFieldMatch(const QVariant &aValue)
-{
-  _ItemData[eMatchCol] = QVariant(QString(aValue.toString()));
-}
-
-void FieldItem::setFieldPostfix(const QVariant &aValue)
-{
-  _ItemData[ePostfixCol] = aValue;
 }
 
 //-------------------------------------------------------------------------------
@@ -111,10 +124,36 @@ std::string FieldItem::getFieldMatch()
 }
 
 //-------------------------------------------------------------------------------
+// TODO?
 //-------------------------------------------------------------------------------
-LineConsumer *FieldItem::getLineConsumer()
+std::string FieldItem::getPostfix()
 {
-  return _LineConsumer;
+  if (_Type != eStruct)
+  {
+    return _ItemData.at(ePostfixCol).toString().toStdString();
+  }
+  return std::string("");
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+void FieldItem::setCheckState(Qt::CheckState aCheckState)
+{
+  _CheckState = aCheckState;
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+void FieldItem::setFieldMatch(const QVariant &aValue)
+{
+  _ItemData[eMatchCol] = QVariant(QString(aValue.toString()));
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+void FieldItem::setFieldPostfix(const QVariant &aValue)
+{
+  _ItemData[ePostfixCol] = aValue;
 }
 
 //-------------------------------------------------------------------------------

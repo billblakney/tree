@@ -6,7 +6,7 @@
 #include <vector>
 #include <QList>
 #include <QVariant>
-#include "LineConsumer.hh"
+#include "FieldItemData.hh"
 #include "Logger.hh"
 
 /**
@@ -22,9 +22,15 @@ public:
     eStructArrayPtr};
 
   FieldItem(NodeType aType,const QList<QVariant> &aData,
-      FieldItem *aParentItem = 0,LineConsumer *aLineConsumer = 0);
+      FieldItem *aParentItem = 0);
+
+  FieldItem(FieldItemData aData,FieldItem *aParentItem = 0);
 
   virtual ~FieldItem();
+
+  //===========================================================================
+  // tree related methods
+  //===========================================================================
 
   void appendChild(FieldItem *item);
 
@@ -40,15 +46,13 @@ public:
 
   FieldItem *parentItem() const;
 
-  NodeType getType() const;
+  //===========================================================================
+  // data related methods
+  //===========================================================================
+
+  NodeType getNodeType() const;
 
   Qt::CheckState getCheckState();
-
-  void setCheckState(Qt::CheckState aCheckState);
-
-  void setFieldMatch(const QVariant & value);
-
-  void setFieldPostfix(const QVariant & value);
 
   std::string getFieldName();
 
@@ -56,7 +60,13 @@ public:
 
   std::string getFieldMatch();
 
-  LineConsumer *getLineConsumer();
+  std::string getPostfix();
+
+  void setCheckState(Qt::CheckState aCheckState);
+
+  void setFieldMatch(const QVariant & value);
+
+  void setFieldPostfix(const QVariant & value);
 
   bool processLines(std::vector<std::string> &aLinesIn,
       std::vector<std::string>::iterator &aLineIter);
@@ -73,8 +83,9 @@ protected:
   QList<QVariant>    _ItemData;
   QList<FieldItem*>  _ChildItems;
   Qt::CheckState     _CheckState;
-  LineConsumer      *_LineConsumer;
   std::string        _InLine;
+
+  FieldItemData      _FieldItemData;
 
 };
 
