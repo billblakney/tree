@@ -23,7 +23,7 @@ DataStructModel::DataStructModel(
   _RootItem = new FieldItem(tRootFieldItemData);
 
   // top node item
-  FieldItemData tTopFieldItemData(FieldItemData::eRoot,"struct",aStructure->_Name,"struct");
+  FieldItemData tTopFieldItemData(FieldItemData::eRoot,"struct",aStructure->_Name,"^struct$");
   _TopNodeItem = new FieldItem(tTopFieldItemData,_RootItem);
 
   _RootItem->appendChild(_TopNodeItem);
@@ -53,6 +53,38 @@ static std::string blanks[] = {
     "                ",
     "                  ",
 };
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+std::string DataStructModel::buildMatchForPrimitiveArrayField(const Field &aField)
+{
+  std::string tMatch = "^" + aField._Name + ":";
+  return tMatch;
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+std::string DataStructModel::buildMatchForPrimitiveField(const Field &aField)
+{
+  std::string tMatch = "^" + aField._Name + ":";
+  return tMatch;
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+std::string DataStructModel::buildMatchForStructArrayField(const Field &aField)
+{
+  std::string tMatch = "^" + aField._Name + ":";
+  return tMatch;
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+std::string DataStructModel::buildMatchForStructField(const Field &aField)
+{
+  std::string tMatch = "^" + aField._Name + ":";
+  return tMatch;
+}
 
 //-------------------------------------------------------------------------------
 // Prints a description of the data structure in a hierarchical fashion.
@@ -93,10 +125,10 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
       // print type and name.
       if (aStructBuilder->isPrimitive(tIter->_Type))
       {
-        FieldItemData tData(FieldItemData::ePrimitiveArrayPtr,tIter->_Name + "[]",tIter->_Type);
-
+        std::string tMatch = buildMatchForPrimitiveArrayField(*tIter);
+        FieldItemData tData(FieldItemData::ePrimitiveArrayPtr,
+            tIter->_Name,tIter->_Type,tMatch);
         FieldItem *dataItem = new FieldItem(tData,aParentItem);
-
         aParentItem->appendChild(dataItem);
 
 //        DEBUG(sLogger,blanks[aLevel]);
@@ -114,10 +146,10 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
         Structure *tStruct = aStructBuilder->getStructure(tIter->_Type);
         if (tStruct != NULL)
         {
-          FieldItemData tData(FieldItemData::eStructArrayPtr,tIter->_Name + "[]",tIter->_Type);
-
+          std::string tMatch = buildMatchForStructArrayField(*tIter);
+          FieldItemData tData(FieldItemData::eStructArrayPtr,
+              tIter->_Name,tIter->_Type,tMatch);
           FieldItem *dataItem = new FieldItem(tData,aParentItem);
-
           aParentItem->appendChild(dataItem);
 
           buildTree(dataItem,tStruct,aStructBuilder,++aLevel);
@@ -136,10 +168,10 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
       Structure *tStruct = aStructBuilder->getStructure(tIter->_Type);
       if (tStruct != NULL)
       {
-        FieldItemData tData(FieldItemData::eStruct,tIter->_Name,tIter->_Type);
-
+        std::string tMatch = buildMatchForStructField(*tIter);
+        FieldItemData tData(FieldItemData::eStruct,
+            tIter->_Name,tIter->_Type,tMatch);
         FieldItem *dataItem = new FieldItem(tData,aParentItem);
-
         aParentItem->appendChild(dataItem);
 
         buildTree(dataItem,tStruct,aStructBuilder,++aLevel);
@@ -158,9 +190,9 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
 //      DEBUG(sLogger,blanks[aLevel]);
       DEBUG(sLogger,blanks[aLevel] << "primitive node: "
           << tIter->_Type << ":" << tIter->_Name);
-
-      FieldItemData tData(FieldItemData::ePrimitive,tIter->_Name,tIter->_Type,tIter->_Name + ":");
-
+      std::string tMatch = buildMatchForPrimitiveField(*tIter);
+      FieldItemData tData(FieldItemData::ePrimitive,
+          tIter->_Name,tIter->_Type,tMatch);
       FieldItem *dataItem = new FieldItem(tData,aParentItem);
 
       aParentItem->appendChild(dataItem);

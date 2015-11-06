@@ -28,6 +28,11 @@ public:
   DataStructModel(
       Structure *aStructure,StructorBuilder *aStructBuilder);
 
+  std::string buildMatchForStructField(const Field &aField);
+  std::string buildMatchForPrimitiveArrayField(const Field &aField);
+  std::string buildMatchForPrimitiveField(const Field &aField);
+  std::string buildMatchForStructArrayField(const Field &aField);
+
   void buildTree(FieldItem *rootItem,Structure *aStructure,
       StructorBuilder *aStructBuilder,int aLevel = 0);
 
