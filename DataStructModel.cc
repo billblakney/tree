@@ -312,14 +312,24 @@ std::string DataStructModel::getMatchString()
   if (tNumCheckFields > 0)
   {
     tMatchString.clear();
+    bool tFirstMatchField = true;
     for (int tIdx = 0; tIdx < tNumCheckFields; tIdx++)
     {
-      if (tIdx != 0)
+      std::string tFieldMatch = tCheckedFieldItems[tIdx]->getData().getMatch();
+      if (tFieldMatch.length() == 0)
+      {
+        continue;
+      }
+
+      if (tFirstMatchField == true)
+      {
+        tFirstMatchField = false;
+      }
+      else
       {
         tMatchString += "|";
       }
-//      tMatchString += tCheckedFieldItems[tIdx]->getData().getName();
-      tMatchString += tCheckedFieldItems[tIdx]->getData().getMatch();
+      tMatchString += tFieldMatch;
     }
   }
   DEBUG(sLogger,"Match string: " << tMatchString);
