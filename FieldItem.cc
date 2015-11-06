@@ -5,18 +5,6 @@ ccl::Logger FieldItem::sLogger("FieldItem");
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
-//FieldItem::FieldItem(
-//    NodeType aType,const QList<QVariant> &aData,FieldItem *aParentItem)
-//  : _ParentItem(aParentItem),
-//    _NodeType(aType),
-//    _ItemData(aData),
-//    _CheckState(Qt::Unchecked),
-//    _InLine("")
-//{
-//}
-
-//-------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------
 FieldItem::FieldItem(FieldItemData aData,FieldItem *aParentItem)
   : _ParentItem(aParentItem)
 {
@@ -111,14 +99,14 @@ Qt::CheckState FieldItem::getCheckState()
 //-------------------------------------------------------------------------------
 std::string FieldItem::getFieldName()
 {
-  return _ItemData.at(eNameCol).toString().toStdString();
+  return _FieldItemData._Name;
 }
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
 std::string FieldItem::getFieldType()
 {
-  return _ItemData.at(eTypeCol).toString().toStdString();
+  return _FieldItemData._Type;
 }
 
 //-------------------------------------------------------------------------------
@@ -128,19 +116,7 @@ std::string FieldItem::getFieldMatch()
 {
   if (_NodeType != FieldItemData::eStruct)
   {
-    return _ItemData.at(eMatchCol).toString().toStdString();
-  }
-  return std::string("");
-}
-
-//-------------------------------------------------------------------------------
-// TODO?
-//-------------------------------------------------------------------------------
-std::string FieldItem::getPostfix()
-{
-  if (_NodeType != FieldItemData::eStruct)
-  {
-    return _ItemData.at(ePostfixCol).toString().toStdString();
+    return _FieldItemData._Match;
   }
   return std::string("");
 }
@@ -157,6 +133,7 @@ void FieldItem::setCheckState(Qt::CheckState aCheckState)
 void FieldItem::setFieldMatch(const QVariant &aValue)
 {
   _ItemData[eMatchCol] = QVariant(QString(aValue.toString()));
+  _FieldItemData._Match = aValue.toString().toStdString();
 }
 
 //-------------------------------------------------------------------------------
@@ -164,6 +141,7 @@ void FieldItem::setFieldMatch(const QVariant &aValue)
 void FieldItem::setFieldPostfix(const QVariant &aValue)
 {
   _ItemData[ePostfixCol] = aValue;
+  _FieldItemData._Postfix = aValue.toString().toStdString();
 }
 
 //-------------------------------------------------------------------------------

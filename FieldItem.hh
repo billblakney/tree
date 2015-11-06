@@ -18,9 +18,6 @@ public:
 
   enum Column {eNameCol, eTypeCol, eMatchCol, ePostfixCol};
 
-//  FieldItem(NodeType aType,const QList<QVariant> &aData, TODO rm
-//      FieldItem *aParentItem = 0);
-
   FieldItem(FieldItemData aData,FieldItem *aParentItem = 0);
 
   virtual ~FieldItem();
@@ -56,8 +53,6 @@ public:
   std::string getFieldType();
 
   std::string getFieldMatch();
-
-  std::string getPostfix();
 
   void setCheckState(Qt::CheckState aCheckState);
 
