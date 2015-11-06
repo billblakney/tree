@@ -46,10 +46,6 @@ public:
 
   FieldItemData getData();
 
-  FieldItemData::NodeType getNodeType() const;
-
-  Qt::CheckState getCheckState();
-
   void setCheckState(Qt::CheckState aCheckState);
 
   void setFieldMatch(const QVariant & value);
@@ -67,10 +63,8 @@ protected:
   static ccl::Logger sLogger;
 
   FieldItem         *_ParentItem;
-  FieldItemData::NodeType           _NodeType;
   QList<QVariant>    _ItemData;
   QList<FieldItem*>  _ChildItems;
-  Qt::CheckState     _CheckState;
   std::string        _InLine;
 
   FieldItemData      _FieldItemData;

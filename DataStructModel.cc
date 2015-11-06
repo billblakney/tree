@@ -329,7 +329,7 @@ std::vector<FieldItem *> DataStructModel::getCheckedFields()
 void DataStructModel::addCheckedFields(
     FieldItem *aNode,std::vector<FieldItem *> &aFieldItems)
 {
-  if (aNode->getCheckState() == Qt::Checked)
+  if (aNode->getData().getCheckState() == Qt::Checked)
   {
     aFieldItems.push_back(aNode);
   }
@@ -357,18 +357,20 @@ QVariant DataStructModel::data(const QModelIndex &index,int role) const
     case Qt::CheckStateRole:
       if (index.column() == eColFieldName)
       {
-        return static_cast<int>(item->getCheckState());
+        return static_cast<int>(item->getData().getCheckState());
       }
       break;
     case Qt::FontRole:
-      if( item->getNodeType() == FieldItemData::eStructArrayPtr
-       || item->getNodeType() == FieldItemData::ePrimitiveArrayPtr)
+      if( item->getData().getNodeType() == FieldItemData::eStructArrayPtr
+       || item->getData().getNodeType() == FieldItemData::ePrimitiveArrayPtr)
       {
         return kArrayFont;
       }
       else if (
-          item->parentItem()->getNodeType() == FieldItemData::eStructArrayPtr
-       || item->parentItem()->getNodeType() == FieldItemData::ePrimitiveArrayPtr)
+          item->parentItem()->getData().getNodeType()
+                                    == FieldItemData::eStructArrayPtr
+       || item->parentItem()->getData().getNodeType()
+                                    == FieldItemData::ePrimitiveArrayPtr)
       {
         return kArrayFont;
       }
@@ -615,7 +617,7 @@ void DataStructModel::updateParentCheckState(
   for (int i = 0; i < tChildCount; i++)
   {
     FieldItem *tChild = tParentItem->child(i);
-    if (tChild->getCheckState() != aNewState)
+    if (tChild->getData().getCheckState() != aNewState)
     {
       tAllChildrenMatch = false;
       break;
@@ -625,7 +627,7 @@ void DataStructModel::updateParentCheckState(
   bool tChangedParent = false;
   if (tAllChildrenMatch)
   {
-    if (tParentItem->getCheckState() != aNewState)
+    if (tParentItem->getData().getCheckState() != aNewState)
     {
       tParentItem->setCheckState(aNewState);
       emit dataChanged(aParentIndex,aParentIndex);
@@ -635,7 +637,7 @@ void DataStructModel::updateParentCheckState(
   else
   {
     DEBUG(sLogger,"updateParentCheckState(): all children DO NOT match");
-    if (tParentItem->getCheckState() != Qt::PartiallyChecked)
+    if (tParentItem->getData().getCheckState() != Qt::PartiallyChecked)
     {
       tParentItem->setCheckState(Qt::PartiallyChecked);
       emit dataChanged(aParentIndex,aParentIndex);

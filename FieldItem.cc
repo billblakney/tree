@@ -16,9 +16,6 @@ FieldItem::FieldItem(FieldItemData aData,FieldItem *aParentItem)
   _ItemData.append(QVariant(aData._Type.c_str()));
   _ItemData.append(QVariant(aData._Match.c_str()));
   _ItemData.append(QVariant(QString("newline (\"\\n\")")));
-
-  _NodeType = aData._NodeType;
-  _CheckState = Qt::Unchecked;
 }
 
 //-------------------------------------------------------------------------------
@@ -83,13 +80,6 @@ FieldItem *FieldItem::parentItem() const
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
-FieldItemData::NodeType FieldItem::getNodeType() const
-{
-  return _NodeType;
-}
-
-//-------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------
 FieldItemData FieldItem::getData()
 {
   return _FieldItemData;
@@ -97,16 +87,9 @@ FieldItemData FieldItem::getData()
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
-Qt::CheckState FieldItem::getCheckState()
-{
-  return _CheckState;
-}
-
-//-------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------
 void FieldItem::setCheckState(Qt::CheckState aCheckState)
 {
-  _CheckState = aCheckState;
+  _FieldItemData._CheckState = aCheckState;
 }
 
 //-------------------------------------------------------------------------------
@@ -138,7 +121,7 @@ bool FieldItem::processLines(std::vector<std::string> &aLinesIn,
     return false;
   }
 
-  if ( _NodeType == FieldItemData::eRoot )
+  if ( getData().getNodeType() == FieldItemData::eRoot )
   {
     std::string &tLine = *aLineIter;
     aLineIter++;
@@ -162,7 +145,7 @@ bool FieldItem::processLines(std::vector<std::string> &aLinesIn,
       return false;
     }
   }
-  if ( _NodeType == FieldItemData::eStruct)
+  if ( getData().getNodeType() == FieldItemData::eStruct)
   {
     _InLine = "";
     for (int tIdx = 0; tIdx < childCount(); tIdx++)
@@ -175,7 +158,7 @@ bool FieldItem::processLines(std::vector<std::string> &aLinesIn,
       }
     }
   }
-  else if (_NodeType == FieldItemData::ePrimitive)
+  else if (getData().getNodeType() == FieldItemData::ePrimitive)
   {
     std::string &tLine = *aLineIter;
     aLineIter++;
