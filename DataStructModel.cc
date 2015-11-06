@@ -236,10 +236,11 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool DataStructModel::processLinesIn(vector<std::string> &aLinesIn)
+bool DataStructModel::processLinesIn(std::vector<std::string> &aLinesIn,
+                                     std::vector<std::string> &aLinesOut)
 {
   vector<std::string>::iterator aLineIter = aLinesIn.begin();
-  bool tSuccess = _TopNodeItem->processLines(aLinesIn,aLineIter);
+  bool tSuccess = _TopNodeItem->processLines(aLinesIn,aLineIter,aLinesOut);
   if (tSuccess)
   {
     DEBUG(sLogger,"successfully processed " << _TopNodeItem->getData().getName());

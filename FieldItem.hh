@@ -52,23 +52,36 @@ public:
 
   void setFieldPostfix(const QVariant & value);
 
-  bool processRootLines(std::vector<std::string> &aLinesIn,
-      std::vector<std::string>::iterator &aLineIter);
+  bool processRootLines(
+      std::vector<std::string> &aLinesIn,
+      std::vector<std::string>::iterator &aLineIter,
+      std::vector<std::string> &aLinesOut);
 
-  bool processPrimitiveLines(std::vector<std::string> &aLinesIn,
-      std::vector<std::string>::iterator &aLineIter);
+  bool processPrimitiveLines(
+      std::vector<std::string> &aLinesIn,
+      std::vector<std::string>::iterator &aLineIter,
+      std::vector<std::string> &aLinesOut);
 
-  bool processPrimitiveArrayLines(std::vector<std::string> &aLinesIn,
-      std::vector<std::string>::iterator &aLineIter);
+  bool processPrimitiveArrayLines(
+      std::vector<std::string> &aLinesIn,
+      std::vector<std::string>::iterator &aLineIter,
+      std::vector<std::string> &aLinesOut);
 
-  bool processStructLines(std::vector<std::string> &aLinesIn,
-      std::vector<std::string>::iterator &aLineIter,bool aSkipStructName = false);
+  bool processStructLines(
+      std::vector<std::string> &aLinesIn,
+      std::vector<std::string>::iterator &aLineIter,
+      std::vector<std::string> &aLinesOut,
+      bool aSkipStructName = false);
 
-  bool processStructArrayLines(std::vector<std::string> &aLinesIn,
-      std::vector<std::string>::iterator &aLineIter);
+  bool processStructArrayLines(
+      std::vector<std::string> &aLinesIn,
+      std::vector<std::string>::iterator &aLineIter,
+      std::vector<std::string> &aLinesOut);
 
-  bool processLines(std::vector<std::string> &aLinesIn,
-      std::vector<std::string>::iterator &aLineIter);
+  bool processLines(
+      std::vector<std::string> &aLinesIn,
+      std::vector<std::string>::iterator &aLineIter,
+      std::vector<std::string> &aLinesOut);
 
   void printInLines();
 

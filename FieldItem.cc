@@ -114,13 +114,15 @@ static SimpleLineMatcher tMatcher; //TODO
 //-------------------------------------------------------------------------------
 // note: root doesn't consume any lines for wsdlfilter
 //-------------------------------------------------------------------------------
-bool FieldItem::processRootLines(std::vector<std::string> &aLinesIn,
-      std::vector<std::string>::iterator &aLineIter)
+bool FieldItem::processRootLines(
+    std::vector<std::string> &aLinesIn,
+    std::vector<std::string>::iterator &aLineIter,
+    std::vector<std::string> &aLinesOut)
 {
   DEBUG(sLogger,"Proceeding with root");
   for (int tIdx = 0; tIdx < childCount(); tIdx++)
   {
-    bool tResult = child(tIdx)->processLines(aLinesIn,aLineIter);
+    bool tResult = child(tIdx)->processLines(aLinesIn,aLineIter,aLinesOut);
     if (tResult == false)
     {
       ERROR(sLogger,"Processing child failed");
@@ -155,8 +157,10 @@ bool FieldItem::processRootLines(std::vector<std::string> &aLinesIn,
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
-bool FieldItem::processPrimitiveLines(std::vector<std::string> &aLinesIn,
-      std::vector<std::string>::iterator &aLineIter)
+bool FieldItem::processPrimitiveLines(
+    std::vector<std::string> &aLinesIn,
+    std::vector<std::string>::iterator &aLineIter,
+    std::vector<std::string> &aLinesOut)
 {
   std::string &tLine = *aLineIter;
   aLineIter++;
@@ -168,6 +172,10 @@ bool FieldItem::processPrimitiveLines(std::vector<std::string> &aLinesIn,
   if (tMatcher.match(tLine))
   {
     _InLine = tLine;
+    if (getData().getCheckState() == Qt::Checked)
+    {
+      aLinesOut.push_back(tLine);
+    }
     DEBUG(sLogger,"primitive node matched: " << getData().getMatch());
   }
   else
@@ -181,16 +189,21 @@ bool FieldItem::processPrimitiveLines(std::vector<std::string> &aLinesIn,
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
-bool FieldItem::processPrimitiveArrayLines(std::vector<std::string> &aLinesIn,
-      std::vector<std::string>::iterator &aLineIter)
+bool FieldItem::processPrimitiveArrayLines(
+    std::vector<std::string> &aLinesIn,
+    std::vector<std::string>::iterator &aLineIter,
+    std::vector<std::string> &aLinesOut)
 {
   return true;
 }
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
-bool FieldItem::processStructLines(std::vector<std::string> &aLinesIn,
-      std::vector<std::string>::iterator &aLineIter,bool aSkipStructName)
+bool FieldItem::processStructLines(
+    std::vector<std::string> &aLinesIn,
+    std::vector<std::string>::iterator &aLineIter,
+    std::vector<std::string> &aLinesOut,
+      bool aSkipStructName)
 {
   DEBUG(sLogger,"Looking for struct with match: " << getData().getMatch());
   if (!aSkipStructName)
@@ -215,7 +228,7 @@ bool FieldItem::processStructLines(std::vector<std::string> &aLinesIn,
 
   for (int tIdx = 0; tIdx < childCount(); tIdx++)
   {
-    bool tResult = child(tIdx)->processLines(aLinesIn,aLineIter);
+    bool tResult = child(tIdx)->processLines(aLinesIn,aLineIter,aLinesOut);
     if (tResult == false)
     {
       ERROR(sLogger,"Processing child failed");
@@ -227,8 +240,10 @@ bool FieldItem::processStructLines(std::vector<std::string> &aLinesIn,
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
-bool FieldItem::processStructArrayLines(std::vector<std::string> &aLinesIn,
-      std::vector<std::string>::iterator &aLineIter)
+bool FieldItem::processStructArrayLines(
+    std::vector<std::string> &aLinesIn,
+    std::vector<std::string>::iterator &aLineIter,
+    std::vector<std::string> &aLinesOut)
 {
   DEBUG(sLogger,"Looking for struct array with match: " << getData().getMatch());
   std::string &tLine = *aLineIter;
@@ -268,7 +283,7 @@ bool FieldItem::processStructArrayLines(std::vector<std::string> &aLinesIn,
   int tArrayLen = 2;
   for (int tIdx = 0; tIdx < tArrayLen; tIdx++)
   {
-    processStructLines(aLinesIn,aLineIter,true);
+    processStructLines(aLinesIn,aLineIter,aLinesOut,true);
   }
 return false;
 }
@@ -277,8 +292,10 @@ return false;
 //  enum NodeType {eNone, eRoot, ePrimitive, eStruct, ePrimitiveArrayPtr,
 //    eStructArrayPtr};
 //-------------------------------------------------------------------------------
-bool FieldItem::processLines(std::vector<std::string> &aLinesIn,
-      std::vector<std::string>::iterator &aLineIter)
+bool FieldItem::processLines(
+    std::vector<std::string> &aLinesIn,
+    std::vector<std::string>::iterator &aLineIter,
+    std::vector<std::string> &aLinesOut)
 {
 
   if (aLineIter == aLinesIn.end())
@@ -289,20 +306,20 @@ bool FieldItem::processLines(std::vector<std::string> &aLinesIn,
 
   if ( getData().getNodeType() == FieldItemData::eRoot )
   {
-    processRootLines(aLinesIn,aLineIter);
+    processRootLines(aLinesIn,aLineIter,aLinesOut);
   }
 
   if ( getData().getNodeType() == FieldItemData::eStruct)
   {
-    processStructLines(aLinesIn,aLineIter);
+    processStructLines(aLinesIn,aLineIter,aLinesOut);
   }
   else if (getData().getNodeType() == FieldItemData::ePrimitive)
   {
-    processPrimitiveLines(aLinesIn,aLineIter);
+    processPrimitiveLines(aLinesIn,aLineIter,aLinesOut);
   }
   else if (getData().getNodeType() == FieldItemData::eStructArrayPtr)
   {
-    processStructArrayLines(aLinesIn,aLineIter);
+    processStructArrayLines(aLinesIn,aLineIter,aLinesOut);
   }
 
   return true;;

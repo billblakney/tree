@@ -56,6 +56,8 @@ DEBUG(sLogger,"tFirstFieldMatch: " << tFirstFieldMatch);
   bool tFoundStart = false;
   bool tFoundFirstField = false;
 
+  std::vector<std::string> tOutLines;
+
   while (std::getline(std::cin,tLineBuffer))
   {
     if (!tFoundStart)
@@ -95,9 +97,18 @@ DEBUG(sLogger,"tFirstFieldMatch: " << tFirstFieldMatch);
         DEBUG(sLogger,"reached end of structure");
 #define USE_OLD
 #ifdef USE_OLD
-        if (_DataStructModel->processLinesIn(tStructLines))
+        if (_DataStructModel->processLinesIn(tStructLines,tOutLines))
         {
-          _DataStructModel->printInLines();
+          std::vector<std::string>::iterator tIter;
+          for (tIter = tOutLines.begin(); tIter != tOutLines.end(); tIter++)
+          {
+            std::cout << ">>" << *tIter << std::endl; //TODO
+          }
+//          _DataStructModel->printInLines();//TODO rm? and is that method worthwhile anymore?
+        }
+        else
+        {
+          std::cout << "ERROR: processLinesIn returned false" << std::endl;
         }
 #else
         std::vector<RecordWriter *>::iterator tIt;
@@ -107,6 +118,7 @@ DEBUG(sLogger,"tFirstFieldMatch: " << tFirstFieldMatch);
         }
 #endif
         tStructLines.clear();
+        tOutLines.clear();
         std::cout << "=== end ===" << std::endl;
         tFoundStart = false;
         tFoundFirstField = false;
