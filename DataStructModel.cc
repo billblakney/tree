@@ -200,23 +200,6 @@ bool DataStructModel::processLinesIn(vector<std::string> &aLinesIn)
     ERROR(sLogger,"Processing: " << _TopNodeItem->getData().getName());
   }
   return tSuccess;
-#if 0
-  if (aLineIter->compare("struct"))
-  {
-    ERROR(sLogger,"Expected match for struct");
-  }
-  for (tIdx = 0; tIdx < _TopNodeItem->childCount(); tIdx++)
-  {
-    if (++aLineIter == aLinesIn.end())
-    {
-      ERROR(sLogger,"Ran out of lines to process"
-      return false;
-    }
-    {
-      _TopNodeItem->child(tIdx)->processLine(aLineIter);
-    }
-  }
-#endif
 }
 
 //-----------------------------------------------------------------------------
