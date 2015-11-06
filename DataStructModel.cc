@@ -30,8 +30,8 @@ DataStructModel::DataStructModel(
 
   buildTree(_TopNodeItem,aStructure,aStructBuilder);
 
-DEBUG(sLogger,getDotString(aStructBuilder,aStructure->_Name,"aStruct"));
-DEBUG(sLogger,getMatchString(_TopNodeItem));
+//DEBUG(sLogger,"CTOR getDotString: " << getDotString(aStructBuilder,aStructure->_Name,"aStruct"));
+//DEBUG(sLogger,"CTOR getMatchString: " << getMatchString(_TopNodeItem));
 }
 
 //-------------------------------------------------------------------------------
@@ -56,34 +56,43 @@ static std::string blanks[] = {
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
-std::string DataStructModel::buildMatchForPrimitiveArrayField(const Field &aField)
+std::string DataStructModel::buildMatchForField(const Field &aField,int aIndentLevel)
 {
-  std::string tMatch = "^" + aField._Name + ":";
+  std::string tMatch = "^";
+  for (int tIdx = 0; tIdx < aIndentLevel; tIdx++)
+  {
+    tMatch += "\t";
+  }
+  tMatch += aField._Name + ":";
   return tMatch;
 }
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
-std::string DataStructModel::buildMatchForPrimitiveField(const Field &aField)
+std::string DataStructModel::buildMatchForPrimitiveArrayField(const Field &aField,int aIndentLevel)
 {
-  std::string tMatch = "^" + aField._Name + ":";
-  return tMatch;
+  return buildMatchForField(aField,aIndentLevel);
 }
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
-std::string DataStructModel::buildMatchForStructArrayField(const Field &aField)
+std::string DataStructModel::buildMatchForPrimitiveField(const Field &aField,int aIndentLevel)
 {
-  std::string tMatch = "^" + aField._Name + ":";
-  return tMatch;
+  return buildMatchForField(aField,aIndentLevel);
 }
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
-std::string DataStructModel::buildMatchForStructField(const Field &aField)
+std::string DataStructModel::buildMatchForStructArrayField(const Field &aField,int aIndentLevel)
 {
-  std::string tMatch = "^" + aField._Name + ":";
-  return tMatch;
+  return buildMatchForField(aField,aIndentLevel);
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+std::string DataStructModel::buildMatchForStructField(const Field &aField,int aIndentLevel)
+{
+  return buildMatchForField(aField,aIndentLevel);
 }
 
 //-------------------------------------------------------------------------------
@@ -125,7 +134,7 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
       // print type and name.
       if (aStructBuilder->isPrimitive(tIter->_Type))
       {
-        std::string tMatch = buildMatchForPrimitiveArrayField(*tIter);
+        std::string tMatch = buildMatchForPrimitiveArrayField(*tIter,aLevel);
         FieldItemData tData(FieldItemData::ePrimitiveArrayPtr,
             tIter->_Name,tIter->_Type,tMatch);
         FieldItem *dataItem = new FieldItem(tData,aParentItem);
@@ -146,7 +155,7 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
         Structure *tStruct = aStructBuilder->getStructure(tIter->_Type);
         if (tStruct != NULL)
         {
-          std::string tMatch = buildMatchForStructArrayField(*tIter);
+          std::string tMatch = buildMatchForStructArrayField(*tIter,aLevel);
           FieldItemData tData(FieldItemData::eStructArrayPtr,
               tIter->_Name,tIter->_Type,tMatch);
           FieldItem *dataItem = new FieldItem(tData,aParentItem);
@@ -168,7 +177,7 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
       Structure *tStruct = aStructBuilder->getStructure(tIter->_Type);
       if (tStruct != NULL)
       {
-        std::string tMatch = buildMatchForStructField(*tIter);
+        std::string tMatch = buildMatchForStructField(*tIter,aLevel);
         FieldItemData tData(FieldItemData::eStruct,
             tIter->_Name,tIter->_Type,tMatch);
         FieldItem *dataItem = new FieldItem(tData,aParentItem);
@@ -190,7 +199,7 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
 //      DEBUG(sLogger,blanks[aLevel]);
       DEBUG(sLogger,blanks[aLevel] << "primitive node: "
           << tIter->_Type << ":" << tIter->_Name);
-      std::string tMatch = buildMatchForPrimitiveField(*tIter);
+      std::string tMatch = buildMatchForPrimitiveField(*tIter,aLevel);
       FieldItemData tData(FieldItemData::ePrimitive,
           tIter->_Name,tIter->_Type,tMatch);
       FieldItem *dataItem = new FieldItem(tData,aParentItem);
@@ -274,6 +283,7 @@ std::string DataStructModel::getDotString(StructorBuilder *aStructBuilder,
 }
 
 //-------------------------------------------------------------------------------
+// Not sure this will be used or what it was originally for.
 //-------------------------------------------------------------------------------
 std::string DataStructModel::getMatchString(FieldItem *aFieldItem)
 {
@@ -291,6 +301,7 @@ std::string DataStructModel::getMatchString(FieldItem *aFieldItem)
 }
 
 //-------------------------------------------------------------------------------
+// Gets the match string for the simple reader.
 //-------------------------------------------------------------------------------
 std::string DataStructModel::getMatchString()
 {
@@ -307,11 +318,11 @@ std::string DataStructModel::getMatchString()
       {
         tMatchString += "|";
       }
-      tMatchString += tCheckedFieldItems[tIdx]->getData().getName();
-      tMatchString += ":";
+//      tMatchString += tCheckedFieldItems[tIdx]->getData().getName();
+      tMatchString += tCheckedFieldItems[tIdx]->getData().getMatch();
     }
   }
-std::cout << "tMatchString: " << tMatchString << std::endl;
+  DEBUG(sLogger,"Match string: " << tMatchString);
   return tMatchString;
 }
 

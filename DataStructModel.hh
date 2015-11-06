@@ -28,10 +28,11 @@ public:
   DataStructModel(
       Structure *aStructure,StructorBuilder *aStructBuilder);
 
-  std::string buildMatchForStructField(const Field &aField);
-  std::string buildMatchForPrimitiveArrayField(const Field &aField);
-  std::string buildMatchForPrimitiveField(const Field &aField);
-  std::string buildMatchForStructArrayField(const Field &aField);
+  std::string buildMatchForField(const Field &aField,int aIndentLevel);
+  std::string buildMatchForStructField(const Field &aField,int aIndentLevel);
+  std::string buildMatchForPrimitiveArrayField(const Field &aField,int aIndentLevel);
+  std::string buildMatchForPrimitiveField(const Field &aField,int aIndentLevel);
+  std::string buildMatchForStructArrayField(const Field &aField,int aIndentLevel);
 
   void buildTree(FieldItem *rootItem,Structure *aStructure,
       StructorBuilder *aStructBuilder,int aLevel = 0);

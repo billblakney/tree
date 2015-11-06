@@ -115,6 +115,8 @@ void FieldItem::setFieldPostfix(const QVariant &aValue)
 bool FieldItem::processLines(std::vector<std::string> &aLinesIn,
       std::vector<std::string>::iterator &aLineIter)
 {
+DEBUG(sLogger,"============================ processLines");
+std::cout << "============================ processLines" << std::endl;
   if (aLineIter == aLinesIn.end())
   {
     ERROR(sLogger,"Ran out of lines in FieldItem::processLines");
