@@ -5,15 +5,15 @@ ccl::Logger FieldItem::sLogger("FieldItem");
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
-FieldItem::FieldItem(
-    NodeType aType,const QList<QVariant> &aData,FieldItem *aParentItem)
-  : _ParentItem(aParentItem),
-    _Type(aType),
-    _ItemData(aData),
-    _CheckState(Qt::Unchecked),
-    _InLine("")
-{
-}
+//FieldItem::FieldItem(
+//    NodeType aType,const QList<QVariant> &aData,FieldItem *aParentItem)
+//  : _ParentItem(aParentItem),
+//    _NodeType(aType),
+//    _ItemData(aData),
+//    _CheckState(Qt::Unchecked),
+//    _InLine("")
+//{
+//}
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
@@ -21,6 +21,16 @@ FieldItem::FieldItem(FieldItemData aData,FieldItem *aParentItem)
   : _ParentItem(aParentItem)
 {
   _FieldItemData = aData;
+
+  QList<QVariant> tList;
+
+  _ItemData.append(QVariant(aData._Name.c_str()));
+  _ItemData.append(QVariant(aData._Type.c_str()));
+  _ItemData.append(QVariant(aData._Match.c_str()));
+  _ItemData.append(QVariant(QString("newline (\"\\n\")")));
+
+  _NodeType = aData._NodeType;
+  _CheckState = Qt::Unchecked;
 }
 
 //-------------------------------------------------------------------------------
@@ -85,9 +95,9 @@ FieldItem *FieldItem::parentItem() const
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
-FieldItem::NodeType FieldItem::getNodeType() const
+FieldItemData::NodeType FieldItem::getNodeType() const
 {
-  return _Type;
+  return _NodeType;
 }
 
 //-------------------------------------------------------------------------------
@@ -116,7 +126,7 @@ std::string FieldItem::getFieldType()
 //-------------------------------------------------------------------------------
 std::string FieldItem::getFieldMatch()
 {
-  if (_Type != eStruct)
+  if (_NodeType != FieldItemData::eStruct)
   {
     return _ItemData.at(eMatchCol).toString().toStdString();
   }
@@ -128,7 +138,7 @@ std::string FieldItem::getFieldMatch()
 //-------------------------------------------------------------------------------
 std::string FieldItem::getPostfix()
 {
-  if (_Type != eStruct)
+  if (_NodeType != FieldItemData::eStruct)
   {
     return _ItemData.at(ePostfixCol).toString().toStdString();
   }
@@ -169,7 +179,7 @@ bool FieldItem::processLines(std::vector<std::string> &aLinesIn,
     return false;
   }
 
-  if ( _Type == eRoot )
+  if ( _NodeType == FieldItemData::eRoot )
   {
     std::string &tLine = *aLineIter;
     aLineIter++;
@@ -193,7 +203,7 @@ bool FieldItem::processLines(std::vector<std::string> &aLinesIn,
       return false;
     }
   }
-  if ( _Type == eStruct)
+  if ( _NodeType == FieldItemData::eStruct)
   {
     _InLine = "";
     for (int tIdx = 0; tIdx < childCount(); tIdx++)
@@ -206,7 +216,7 @@ bool FieldItem::processLines(std::vector<std::string> &aLinesIn,
       }
     }
   }
-  else if (_Type == ePrimitive)
+  else if (_NodeType == FieldItemData::ePrimitive)
   {
     std::string &tLine = *aLineIter;
     aLineIter++;

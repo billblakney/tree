@@ -20,15 +20,15 @@ public:
 
   FieldItemData(
       NodeType aNodeType,
-      Qt::CheckState aCheckState,
       std::string aName,
       std::string aType,
-      std::string aMatch,
-      std::string aPostfix);
+      std::string aMatch = "",
+      std::string aPostfix = "",
+      Qt::CheckState aCheckState = Qt::Unchecked);
 
   virtual ~FieldItemData();
 
-protected:
+//protected: TODO
 
 //  static ccl::Logger sLogger;
 

@@ -19,17 +19,17 @@ FieldItemData::FieldItemData()
 //-------------------------------------------------------------------------------
 FieldItemData::FieldItemData(
       NodeType aNodeType,
-      Qt::CheckState aCheckState,
       std::string aName,
       std::string aType,
       std::string aMatch,
-      std::string aPostfix)
+      std::string aPostfix,
+      Qt::CheckState aCheckState)
   : _NodeType(aNodeType),
-    _CheckState(aCheckState),
     _Name(aName),
     _Type(aType),
     _Match(aMatch),
-    _Postfix(aPostfix)
+    _Postfix(aPostfix),
+    _CheckState(aCheckState)
   {
 
   }

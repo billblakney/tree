@@ -5,6 +5,7 @@ temp*
 .meta
 .project
 .cproject
+.settings
 tree
 tree.exe
 .DS_store

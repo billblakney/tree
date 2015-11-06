@@ -18,11 +18,8 @@ public:
 
   enum Column {eNameCol, eTypeCol, eMatchCol, ePostfixCol};
 
-  enum NodeType {eNone, eRoot, ePrimitive, eStruct, ePrimitiveArrayPtr,
-    eStructArrayPtr};
-
-  FieldItem(NodeType aType,const QList<QVariant> &aData,
-      FieldItem *aParentItem = 0);
+//  FieldItem(NodeType aType,const QList<QVariant> &aData, TODO rm
+//      FieldItem *aParentItem = 0);
 
   FieldItem(FieldItemData aData,FieldItem *aParentItem = 0);
 
@@ -50,7 +47,7 @@ public:
   // data related methods
   //===========================================================================
 
-  NodeType getNodeType() const;
+  FieldItemData::NodeType getNodeType() const;
 
   Qt::CheckState getCheckState();
 
@@ -79,7 +76,7 @@ protected:
   static ccl::Logger sLogger;
 
   FieldItem         *_ParentItem;
-  NodeType           _Type;
+  FieldItemData::NodeType           _NodeType;
   QList<QVariant>    _ItemData;
   QList<FieldItem*>  _ChildItems;
   Qt::CheckState     _CheckState;

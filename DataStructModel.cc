@@ -19,13 +19,12 @@ DataStructModel::DataStructModel(
   kArrayFont.setItalic(true);
 
   // root item
-  QList<QVariant> aRootData = buildDataList(aStructure->_Name,aStructure->_Name);
-  _RootItem = new FieldItem(FieldItem::eRoot,aRootData);
+  FieldItemData tRootFieldItemData(FieldItemData::eRoot,aStructure->_Name,aStructure->_Name);
+  _RootItem = new FieldItem(tRootFieldItemData);
 
   // top node item
-  QList<QVariant> aTopNodeData =
-      buildDataList("struct",aStructure->_Name,"struct");
-  _TopNodeItem = new FieldItem(FieldItem::eRoot,aTopNodeData,_RootItem);
+  FieldItemData tTopFieldItemData(FieldItemData::eRoot,"struct",aStructure->_Name,"struct");
+  _TopNodeItem = new FieldItem(tTopFieldItemData,_RootItem);
 
   _RootItem->appendChild(_TopNodeItem);
 
@@ -94,11 +93,9 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
       // print type and name.
       if (aStructBuilder->isPrimitive(tIter->_Type))
       {
-        QList<QVariant> data =
-            buildDataList(tIter->_Name + "[]",tIter->_Type);
+        FieldItemData tData(FieldItemData::ePrimitiveArrayPtr,tIter->_Name + "[]",tIter->_Type);
 
-        FieldItem *dataItem = new FieldItem(
-            FieldItem::ePrimitiveArrayPtr,data,aParentItem);
+        FieldItem *dataItem = new FieldItem(tData,aParentItem);
 
         aParentItem->appendChild(dataItem);
 
@@ -117,11 +114,9 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
         Structure *tStruct = aStructBuilder->getStructure(tIter->_Type);
         if (tStruct != NULL)
         {
-          QList<QVariant> data =
-              buildDataList(tIter->_Name + "[]",tIter->_Type);
+          FieldItemData tData(FieldItemData::eStructArrayPtr,tIter->_Name + "[]",tIter->_Type);
 
-          FieldItem *dataItem = new FieldItem(
-              FieldItem::eStructArrayPtr,data,aParentItem);
+          FieldItem *dataItem = new FieldItem(tData,aParentItem);
 
           aParentItem->appendChild(dataItem);
 
@@ -141,11 +136,9 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
       Structure *tStruct = aStructBuilder->getStructure(tIter->_Type);
       if (tStruct != NULL)
       {
-        QList<QVariant> data =
-            buildDataList(tIter->_Name,tIter->_Type);
+        FieldItemData tData(FieldItemData::eStruct,tIter->_Name,tIter->_Type);
 
-        FieldItem *dataItem = new FieldItem(
-            FieldItem::eStruct,data,aParentItem);
+        FieldItem *dataItem = new FieldItem(tData,aParentItem);
 
         aParentItem->appendChild(dataItem);
 
@@ -166,11 +159,9 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
       DEBUG(sLogger,blanks[aLevel] << "primitive node: "
           << tIter->_Type << ":" << tIter->_Name);
 
-      QList<QVariant> data =
-          buildDataList(tIter->_Name,tIter->_Type,tIter->_Name + ":");
+      FieldItemData tData(FieldItemData::ePrimitive,tIter->_Name,tIter->_Type,tIter->_Name + ":");
 
-      FieldItem *dataItem = new FieldItem(
-          FieldItem::ePrimitive,data,aParentItem);
+      FieldItem *dataItem = new FieldItem(tData,aParentItem);
 
       aParentItem->appendChild(dataItem);
     }
@@ -370,14 +361,14 @@ QVariant DataStructModel::data(const QModelIndex &index,int role) const
       }
       break;
     case Qt::FontRole:
-      if( item->getNodeType() == FieldItem::eStructArrayPtr
-       || item->getNodeType() == FieldItem::ePrimitiveArrayPtr)
+      if( item->getNodeType() == FieldItemData::eStructArrayPtr
+       || item->getNodeType() == FieldItemData::ePrimitiveArrayPtr)
       {
         return kArrayFont;
       }
       else if (
-          item->parentItem()->getNodeType() == FieldItem::eStructArrayPtr
-       || item->parentItem()->getNodeType() == FieldItem::ePrimitiveArrayPtr)
+          item->parentItem()->getNodeType() == FieldItemData::eStructArrayPtr
+       || item->parentItem()->getNodeType() == FieldItemData::ePrimitiveArrayPtr)
       {
         return kArrayFont;
       }
