@@ -90,35 +90,16 @@ FieldItemData::NodeType FieldItem::getNodeType() const
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
+FieldItemData FieldItem::getData()
+{
+  return _FieldItemData;
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 Qt::CheckState FieldItem::getCheckState()
 {
   return _CheckState;
-}
-
-//-------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------
-std::string FieldItem::getFieldName()
-{
-  return _FieldItemData._Name;
-}
-
-//-------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------
-std::string FieldItem::getFieldType()
-{
-  return _FieldItemData._Type;
-}
-
-//-------------------------------------------------------------------------------
-// TODO?
-//-------------------------------------------------------------------------------
-std::string FieldItem::getFieldMatch()
-{
-  if (_NodeType != FieldItemData::eStruct)
-  {
-    return _FieldItemData._Match;
-  }
-  return std::string("");
 }
 
 //-------------------------------------------------------------------------------
@@ -161,9 +142,9 @@ bool FieldItem::processLines(std::vector<std::string> &aLinesIn,
   {
     std::string &tLine = *aLineIter;
     aLineIter++;
-    if (!tLine.compare(getFieldMatch()))
+    if (!tLine.compare(getData().getMatch()))
     {
-      DEBUG(sLogger,"Root node match: " << getFieldMatch());
+      DEBUG(sLogger,"Root node match: " << getData().getMatch());
       _InLine = tLine;
       for (int tIdx = 0; tIdx < childCount(); tIdx++)
       {
@@ -177,7 +158,7 @@ bool FieldItem::processLines(std::vector<std::string> &aLinesIn,
     }
     else
     {
-      ERROR(sLogger,"Root didn't match: " << getFieldMatch());
+      ERROR(sLogger,"Root didn't match: " << getData().getMatch());
       return false;
     }
   }
@@ -198,14 +179,14 @@ bool FieldItem::processLines(std::vector<std::string> &aLinesIn,
   {
     std::string &tLine = *aLineIter;
     aLineIter++;
-    if (!tLine.compare(getFieldMatch()))
+    if (!tLine.compare(getData().getMatch()))
     {
       _InLine = tLine;
-      DEBUG(sLogger,"primitive node matched: " << getFieldMatch());
+      DEBUG(sLogger,"primitive node matched: " << getData().getMatch());
     }
     else
     {
-      ERROR(sLogger,"Primitive node didn't match: " << getFieldMatch());
+      ERROR(sLogger,"Primitive node didn't match: " << getData().getMatch());
       return false;
     }
   }

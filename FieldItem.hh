@@ -44,15 +44,11 @@ public:
   // data related methods
   //===========================================================================
 
+  FieldItemData getData();
+
   FieldItemData::NodeType getNodeType() const;
 
   Qt::CheckState getCheckState();
-
-  std::string getFieldName();
-
-  std::string getFieldType();
-
-  std::string getFieldMatch();
 
   void setCheckState(Qt::CheckState aCheckState);
 

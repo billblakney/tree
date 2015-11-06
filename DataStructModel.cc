@@ -193,11 +193,11 @@ bool DataStructModel::processLinesIn(vector<std::string> &aLinesIn)
   bool tSuccess = _TopNodeItem->processLines(aLinesIn,aLineIter);
   if (tSuccess)
   {
-    DEBUG(sLogger,"successfully processed " << _TopNodeItem->getFieldName());
+    DEBUG(sLogger,"successfully processed " << _TopNodeItem->getData().getName());
   }
   else
   {
-    ERROR(sLogger,"Processing: " << _TopNodeItem->getFieldName());
+    ERROR(sLogger,"Processing: " << _TopNodeItem->getData().getName());
   }
   return tSuccess;
 #if 0
@@ -279,8 +279,8 @@ std::string DataStructModel::getMatchString(FieldItem *aFieldItem)
 {
   std::string tString;
 
-  tString += aFieldItem->getFieldType() + ","
-           + aFieldItem->getFieldMatch() + "\n";
+  tString += aFieldItem->getData().getType() + ","
+           + aFieldItem->getData().getMatch() + "\n";
 
   for (int i = 0; i < aFieldItem->childCount(); i++)
   {
@@ -307,7 +307,7 @@ std::string DataStructModel::getMatchString()
       {
         tMatchString += "|";
       }
-      tMatchString += tCheckedFieldItems[tIdx]->getFieldName();
+      tMatchString += tCheckedFieldItems[tIdx]->getData().getName();
       tMatchString += ":";
     }
   }
