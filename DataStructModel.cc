@@ -228,21 +228,6 @@ void DataStructModel::printInLines()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-QList<QVariant> DataStructModel::buildDataList(
-    const std::string aName,const std::string aType,const std::string aMatch)
-{
-  QList<QVariant> tList;
-
-  tList.append(QVariant(aName.c_str()));
-  tList.append(QVariant(aType.c_str()));
-  tList.append(QVariant(aMatch.c_str()));
-  tList.append(QVariant(QString("newline (\"\\n\")")));
-
-  return tList;
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
 std::string DataStructModel::getDotString(StructorBuilder *aStructBuilder,
     std::string aName,std::string aPrefix)
 {

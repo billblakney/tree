@@ -31,9 +31,6 @@ public:
   void buildTree(FieldItem *rootItem,Structure *aStructure,
       StructorBuilder *aStructBuilder,int aLevel = 0);
 
-  QList<QVariant> buildDataList(
-    const std::string aName,const std::string aType,std::string aMatch = "");
-
   bool processLinesIn(std::vector<std::string> &aLinesIn);
 
   void printInLines();

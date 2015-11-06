@@ -23,7 +23,7 @@ public:
       std::string aName,
       std::string aType,
       std::string aMatch = "",
-      std::string aPostfix = "",
+      std::string aPostfix = "newline (\"\\n\")",
       Qt::CheckState aCheckState = Qt::Unchecked);
 
   virtual ~FieldItemData();
