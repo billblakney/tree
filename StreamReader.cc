@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include "StreamReader.hh"
-#include "SimpleLineConsumer.hh"
+#include "SimpleLineMatcher.hh"
 
 ccl::Logger StreamReader::sLogger("StreamReader");
 
@@ -41,11 +41,16 @@ void StreamReader::run()
 
   std::string tLineBuffer;
 
+#if 0 //TODO rm
   SimpleLineConsumer tReceivedMessageConsumer(
-      std::cin,tLineBuffer,"start",true);
+      std::cin,tLineBuffer,".*RECEIVED MESSAGE.*",true);
 
   SimpleLineConsumer tEndMessageConsumer(
-      std::cin,tLineBuffer,"end",false);
+      std::cin,tLineBuffer,".*=====END MESSAGE=====.*",false);
+#endif
+
+  SimpleLineMatcher tBeginMessageMatcher(".*===RECEIVED MESSAGE===.*");
+  SimpleLineMatcher tEndMessageMatcher(".*===END MESSAGE===.*");
 
   vector<std::string> tStructLines;
 
@@ -55,20 +60,20 @@ void StreamReader::run()
   {
     if (tLookingForStart)
     {
-      if (tLineBuffer.compare("start"))
-      {
-        DEBUG(sLogger,"didn't find start match");
-      }
-      else
+      if (tBeginMessageMatcher.match(tLineBuffer) )
       {
         DEBUG(sLogger,"found start match");
         std::cout << "=== start ===" << std::endl;
         tLookingForStart = false;
       }
+      else
+      {
+        DEBUG(sLogger,"didn't find start match");
+      }
     }
     else
     {
-      if (tLineBuffer.compare("end"))
+      if (!tEndMessageMatcher.match(tLineBuffer) )
       {
         DEBUG(sLogger,"pushing back struct line");
         tStructLines.push_back(tLineBuffer);

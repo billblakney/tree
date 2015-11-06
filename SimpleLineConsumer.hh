@@ -1,6 +1,7 @@
 #ifndef SIMPLELINECONSUMER_HH_
 #define SIMPLELINECONSUMER_HH_
 
+#include <boost/regex.hpp>
 #include "LineConsumer.hh"
 
 class SimpleLineConsumer : public LineConsumer
@@ -21,7 +22,7 @@ public:
 
 protected:
 
-  std::string  _MatchString;
+  boost::regex _MatchRegex;
   bool         _ContinueOnMismatch;
 };
 

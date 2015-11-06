@@ -9,7 +9,7 @@
 SimpleLineConsumer::SimpleLineConsumer(
     std::istream &aStream,std::string &aLineBuffer,std::string aMatchRegex,bool aContinueOnMismatch)
   : LineConsumer(aStream,aLineBuffer),
-    _MatchString(aMatchRegex),
+    _MatchRegex(aMatchRegex),
     _ContinueOnMismatch(aContinueOnMismatch)
 {
 }
@@ -41,7 +41,10 @@ bool SimpleLineConsumer::consume()
   while (tContinue)
   {
     std::getline(_Stream,_LineBuffer);
-    if (_MatchString.compare(_LineBuffer) == 0)
+
+std::cout << "testing [" << _LineBuffer << "] against [" << _MatchRegex << "]" << std::endl;
+    boost::match_results<std::string::const_iterator> what;
+    if (boost::regex_match(_LineBuffer,what,_MatchRegex))
     {
       onMatch();
       tSucceeded = true;

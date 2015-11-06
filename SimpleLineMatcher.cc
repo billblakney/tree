@@ -6,6 +6,11 @@ SimpleLineMatcher::SimpleLineMatcher()
 {
 }
 
+SimpleLineMatcher::SimpleLineMatcher(std::string aMatchRegex)
+  : _MatchRegex(aMatchRegex)
+{
+}
+
 SimpleLineMatcher::~SimpleLineMatcher()
 {
 }

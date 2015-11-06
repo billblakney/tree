@@ -1,4 +1,6 @@
-start
+==============RECEIVED MESSAGE=========
+some junk here
+some junk there
 struct
 	field1:
 	field2:
@@ -11,4 +13,4 @@ struct
 		b2:
 		b1:
 		b2:
-end
+==============END MESSAGE=========

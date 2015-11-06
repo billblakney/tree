@@ -43,11 +43,12 @@ HEADERS += \
            FieldItem.hh \
            FieldItemData.hh \
            LineConsumer.hh \
+           LineMatcher.hh \
            MainWindow.hh \
            RecordWriter.hh \
            SimpleLineConsumer.hh \
            SimpleRecordWriter.hh \
-#           SimpleLineMatcher.hh \
+           SimpleLineMatcher.hh \
            StreamReader.hh \
            StructTreeView.hh \
            TreeItem.hh \
@@ -58,11 +59,12 @@ SOURCES += \
            FieldItem.cc \
            FieldItemData.cc \
            LineConsumer.cc \
+           LineMatcher.cc \
            MainWindow.cc \
            RecordWriter.cc \
            SimpleLineConsumer.cc \
            SimpleRecordWriter.cc \
-#           SimpleLineMatcher.cc \
+           SimpleLineMatcher.cc \
            StreamReader.cc \
            StructTreeView.cc \
            TreeItem.cc \
