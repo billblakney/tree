@@ -21,6 +21,10 @@ bool SimpleLineMatcher::match(std::string &aStr)
 
     if (boost::regex_match(aStr,what,_MatchRegex))
     {
+if (what.size()>1)
+{
+  std::cout << "WHAT[1]: " << what[1] << std::endl;
+}
       return true;
     }
     else

@@ -1,5 +1,6 @@
 #include <iostream>
 #include "FieldItem.hh"
+#include "SimpleLineMatcher.hh"
 
 ccl::Logger FieldItem::sLogger("FieldItem");
 
@@ -108,48 +109,31 @@ void FieldItem::setFieldPostfix(const QVariant &aValue)
   _FieldItemData._Postfix = aValue.toString().toStdString();
 }
 
+static SimpleLineMatcher tMatcher; //TODO
+
 //-------------------------------------------------------------------------------
-//  enum NodeType {eNone, eRoot, ePrimitive, eStruct, ePrimitiveArrayPtr,
-//    eStructArrayPtr};
+// note: root doesn't consume any lines for wsdlfilter
 //-------------------------------------------------------------------------------
-bool FieldItem::processLines(std::vector<std::string> &aLinesIn,
+bool FieldItem::processRootLines(std::vector<std::string> &aLinesIn,
       std::vector<std::string>::iterator &aLineIter)
 {
-DEBUG(sLogger,"============================ processLines");
-std::cout << "============================ processLines" << std::endl;
-  if (aLineIter == aLinesIn.end())
+  DEBUG(sLogger,"Proceeding with root");
+  for (int tIdx = 0; tIdx < childCount(); tIdx++)
   {
-    ERROR(sLogger,"Ran out of lines in FieldItem::processLines");
-    return false;
-  }
-
-  if ( getData().getNodeType() == FieldItemData::eRoot )
-  {
-    std::string &tLine = *aLineIter;
-    aLineIter++;
-    if (!tLine.compare(getData().getMatch()))
+    bool tResult = child(tIdx)->processLines(aLinesIn,aLineIter);
+    if (tResult == false)
     {
-      DEBUG(sLogger,"Root node match: " << getData().getMatch());
-      _InLine = tLine;
-      for (int tIdx = 0; tIdx < childCount(); tIdx++)
-      {
-        bool tResult = child(tIdx)->processLines(aLinesIn,aLineIter);
-        if (tResult == false)
-        {
-          ERROR(sLogger,"Processing child failed");
-          return false;
-        }
-      }
-    }
-    else
-    {
-      ERROR(sLogger,"Root didn't match: " << getData().getMatch());
+      ERROR(sLogger,"Processing child failed");
       return false;
     }
   }
-  if ( getData().getNodeType() == FieldItemData::eStruct)
+#if 0
+  std::string &tLine = *aLineIter;
+  aLineIter++;
+  if (!tLine.compare(getData().getMatch()))
   {
-    _InLine = "";
+    DEBUG(sLogger,"Root node match: " << getData().getMatch());
+    _InLine = tLine;
     for (int tIdx = 0; tIdx < childCount(); tIdx++)
     {
       bool tResult = child(tIdx)->processLines(aLinesIn,aLineIter);
@@ -160,20 +144,165 @@ std::cout << "============================ processLines" << std::endl;
       }
     }
   }
-  else if (getData().getNodeType() == FieldItemData::ePrimitive)
+  else
+  {
+    ERROR(sLogger,"Root didn't match: " << getData().getMatch());
+    return false;
+  }
+#endif
+  return true;
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+bool FieldItem::processPrimitiveLines(std::vector<std::string> &aLinesIn,
+      std::vector<std::string>::iterator &aLineIter)
+{
+  std::string &tLine = *aLineIter;
+  aLineIter++;
+
+  tMatcher.setMatchRegex(getData().getMatch());
+
+  //TODO rm    if (!tLine.compare(getData().getMatch()))
+  //TODO make matcher a FieldItem field?
+  if (tMatcher.match(tLine))
+  {
+    _InLine = tLine;
+    DEBUG(sLogger,"primitive node matched: " << getData().getMatch());
+  }
+  else
+  {
+    ERROR(sLogger,"Primitive node <" << tLine << "> didn't match: <"
+        << getData().getMatch() << ">");
+    return false;
+  }
+  return true;
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+bool FieldItem::processPrimitiveArrayLines(std::vector<std::string> &aLinesIn,
+      std::vector<std::string>::iterator &aLineIter)
+{
+  return true;
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+bool FieldItem::processStructLines(std::vector<std::string> &aLinesIn,
+      std::vector<std::string>::iterator &aLineIter,bool aSkipStructName)
+{
+  DEBUG(sLogger,"Looking for struct with match: " << getData().getMatch());
+  if (!aSkipStructName)
   {
     std::string &tLine = *aLineIter;
     aLineIter++;
-    if (!tLine.compare(getData().getMatch()))
+
+    tMatcher.setMatchRegex(getData().getMatch());
+    if (tMatcher.match(tLine))
     {
       _InLine = tLine;
-      DEBUG(sLogger,"primitive node matched: " << getData().getMatch());
+      //    _InLine = ""; //TODO decide on this
+      DEBUG(sLogger,"struct node matched: " << getData().getMatch());
     }
     else
     {
-      ERROR(sLogger,"Primitive node didn't match: " << getData().getMatch());
+      ERROR(sLogger,"struct node <" << tLine << "> didn't match: <"
+          << getData().getMatch() << ">");
       return false;
     }
+  }
+
+  for (int tIdx = 0; tIdx < childCount(); tIdx++)
+  {
+    bool tResult = child(tIdx)->processLines(aLinesIn,aLineIter);
+    if (tResult == false)
+    {
+      ERROR(sLogger,"Processing child failed");
+      return false;
+    }
+  }
+  return true;
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+bool FieldItem::processStructArrayLines(std::vector<std::string> &aLinesIn,
+      std::vector<std::string>::iterator &aLineIter)
+{
+  DEBUG(sLogger,"Looking for struct array with match: " << getData().getMatch());
+  std::string &tLine = *aLineIter;
+  aLineIter++;
+
+  tMatcher.setMatchRegex(getData().getMatch());
+  if (tMatcher.match(tLine))
+  {
+    _InLine = tLine;
+    //    _InLine = ""; //TODO decide on this
+    DEBUG(sLogger,"struct array node matched: " << getData().getMatch());
+  }
+  else
+  {
+    ERROR(sLogger,"struct array node <" << tLine << "> didn't match: <"
+        << getData().getMatch() << ">");
+    return false;
+  }
+
+  // Now get "array of len: N".
+  tLine = *aLineIter;
+  aLineIter++;
+
+  tMatcher.setMatchRegex(".*array of len: (\\d+)"); //TODO exact match of tabs?
+  if (tMatcher.match(tLine))
+  {
+    _InLine = tLine;
+    //    _InLine = ""; //TODO decide on this
+    DEBUG(sLogger,"array of len matched: " << tLine);
+  }
+  else
+  {
+    ERROR(sLogger,"array of len didn't match: <" << tLine);
+    return false;
+  }
+
+  int tArrayLen = 2;
+  for (int tIdx = 0; tIdx < tArrayLen; tIdx++)
+  {
+    processStructLines(aLinesIn,aLineIter,true);
+  }
+return false;
+}
+
+//-------------------------------------------------------------------------------
+//  enum NodeType {eNone, eRoot, ePrimitive, eStruct, ePrimitiveArrayPtr,
+//    eStructArrayPtr};
+//-------------------------------------------------------------------------------
+bool FieldItem::processLines(std::vector<std::string> &aLinesIn,
+      std::vector<std::string>::iterator &aLineIter)
+{
+
+  if (aLineIter == aLinesIn.end())
+  {
+    ERROR(sLogger,"Ran out of lines in FieldItem::processLines");
+    return false;
+  }
+
+  if ( getData().getNodeType() == FieldItemData::eRoot )
+  {
+    processRootLines(aLinesIn,aLineIter);
+  }
+
+  if ( getData().getNodeType() == FieldItemData::eStruct)
+  {
+    processStructLines(aLinesIn,aLineIter);
+  }
+  else if (getData().getNodeType() == FieldItemData::ePrimitive)
+  {
+    processPrimitiveLines(aLinesIn,aLineIter);
+  }
+  else if (getData().getNodeType() == FieldItemData::eStructArrayPtr)
+  {
+    processStructArrayLines(aLinesIn,aLineIter);
   }
 
   return true;;

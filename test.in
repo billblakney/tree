@@ -9,6 +9,7 @@ struct
 		field2:
 		field3:
 	bunches:
+		array of len: 2
 		b1:
 		b2:
 		b1:

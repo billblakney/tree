@@ -52,6 +52,21 @@ public:
 
   void setFieldPostfix(const QVariant & value);
 
+  bool processRootLines(std::vector<std::string> &aLinesIn,
+      std::vector<std::string>::iterator &aLineIter);
+
+  bool processPrimitiveLines(std::vector<std::string> &aLinesIn,
+      std::vector<std::string>::iterator &aLineIter);
+
+  bool processPrimitiveArrayLines(std::vector<std::string> &aLinesIn,
+      std::vector<std::string>::iterator &aLineIter);
+
+  bool processStructLines(std::vector<std::string> &aLinesIn,
+      std::vector<std::string>::iterator &aLineIter,bool aSkipStructName = false);
+
+  bool processStructArrayLines(std::vector<std::string> &aLinesIn,
+      std::vector<std::string>::iterator &aLineIter);
+
   bool processLines(std::vector<std::string> &aLinesIn,
       std::vector<std::string>::iterator &aLineIter);
 

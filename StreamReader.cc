@@ -93,7 +93,7 @@ DEBUG(sLogger,"tFirstFieldMatch: " << tFirstFieldMatch);
       else
       {
         DEBUG(sLogger,"reached end of structure");
-//#define USE_OLD
+#define USE_OLD
 #ifdef USE_OLD
         if (_DataStructModel->processLinesIn(tStructLines))
         {
