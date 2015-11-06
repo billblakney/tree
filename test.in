@@ -6,4 +6,9 @@ struct
 		field1:
 		field2:
 		field3:
+	bunches:
+		b1:
+		b2:
+		b1:
+		b2:
 end
