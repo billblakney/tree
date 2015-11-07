@@ -5,6 +5,8 @@
 
 ccl::Logger StreamReader::sLogger("StreamReader");
 
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 StreamReader::StreamReader(DataStructModel *aModel,RecordWriter *aWriter)
   : _DataStructModel(aModel)
 {
@@ -13,11 +15,15 @@ StreamReader::StreamReader(DataStructModel *aModel,RecordWriter *aWriter)
   _Mutex.unlock();
 }
 
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 StreamReader::~StreamReader()
 {
 }
 
+//-----------------------------------------------------------------------------
 // TODO mem leak
+//-----------------------------------------------------------------------------
 void StreamReader::setRecordWriter(RecordWriter *aWriter)
 {
   if (_Writers.size() == 0)
@@ -30,25 +36,16 @@ void StreamReader::setRecordWriter(RecordWriter *aWriter)
   }
 }
 
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void StreamReader::run()
 {
-  std::string tInputLine;
-
-  std::string tLineBuffer;
-
-#if 0 //TODO rm
-  SimpleLineConsumer tReceivedMessageConsumer(
-      std::cin,tLineBuffer,".*RECEIVED MESSAGE.*",true);
-
-  SimpleLineConsumer tEndMessageConsumer(
-      std::cin,tLineBuffer,".*=====END MESSAGE=====.*",false);
-#endif
 
   SimpleLineMatcher tBeginMessageMatcher(".*===RECEIVED MESSAGE===.*");
   SimpleLineMatcher tEndMessageMatcher(".*===END MESSAGE===.*");
-DEBUG(sLogger,"getting tFirstFieldMatch");
+
   std::string tFirstFieldMatch = _DataStructModel->getFirstFieldMatch();
-DEBUG(sLogger,"tFirstFieldMatch: " << tFirstFieldMatch);
+
   SimpleLineMatcher tFirstFieldMatcher(tFirstFieldMatch);
 
   vector<std::string> tStructLines;
@@ -56,7 +53,7 @@ DEBUG(sLogger,"tFirstFieldMatch: " << tFirstFieldMatch);
   bool tFoundStart = false;
   bool tFoundFirstField = false;
 
-  std::vector<std::string> tOutLines;
+  std::string tLineBuffer;
 
   while (std::getline(std::cin,tLineBuffer))
   {
@@ -95,16 +92,18 @@ DEBUG(sLogger,"tFirstFieldMatch: " << tFirstFieldMatch);
       else
       {
         DEBUG(sLogger,"reached end of structure");
+
+        std::vector<std::string> tOutLines;
+
 #define USE_OLD
 #ifdef USE_OLD
-        if (_DataStructModel->processLinesIn(tStructLines,tOutLines))
+        if (_DataStructModel->processStructLines(tStructLines,tOutLines))
         {
           std::vector<std::string>::iterator tIter;
           for (tIter = tOutLines.begin(); tIter != tOutLines.end(); tIter++)
           {
             std::cout << ">>" << *tIter << std::endl; //TODO
           }
-//          _DataStructModel->printInLines();//TODO rm? and is that method worthwhile anymore?
         }
         else
         {
@@ -118,7 +117,6 @@ DEBUG(sLogger,"tFirstFieldMatch: " << tFirstFieldMatch);
         }
 #endif
         tStructLines.clear();
-        tOutLines.clear();
         std::cout << "=== end ===" << std::endl;
         tFoundStart = false;
         tFoundFirstField = false;

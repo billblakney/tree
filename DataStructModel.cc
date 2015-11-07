@@ -10,28 +10,32 @@ ccl::Logger DataStructModel::sLogger("DataStructModel");
 QFont DataStructModel::kArrayFont;
 
 //-------------------------------------------------------------------------------
+// Constructs all of the FieldItems that comprise the tree of fields.
 //-------------------------------------------------------------------------------
 DataStructModel::DataStructModel(
-    Structure *aStructure,StructorBuilder *aStructBuilder)
-  : _RootItem(0),
+    Structure *aStruct,StructorBuilder *aStructBuilder)
+  : _StructBuilder(aStructBuilder),
+    _RootItem(0),
     _TopNodeItem(0)
 {
   kArrayFont.setItalic(true);
 
   // root item
-  FieldItemData tRootFieldItemData(FieldItemData::eRoot,aStructure->_Name,aStructure->_Name);
-  _RootItem = new FieldItem(tRootFieldItemData);
+  FieldItemData tRootData(FieldItemData::eRoot,aStruct->_Name,aStruct->_Name);
+  _RootItem = new FieldItem(tRootData);
 
   // top node item
-  FieldItemData tTopFieldItemData(FieldItemData::eRoot,"struct",aStructure->_Name);
-  _TopNodeItem = new FieldItem(tTopFieldItemData,_RootItem);
+  FieldItemData tTopData(FieldItemData::eRoot,"struct",aStruct->_Name);
+  _TopNodeItem = new FieldItem(tTopData,_RootItem);
 
   _RootItem->appendChild(_TopNodeItem);
 
-  buildTree(_TopNodeItem,aStructure,aStructBuilder);
+  buildTree(_TopNodeItem,aStruct);
 
-//DEBUG(sLogger,"CTOR getDotString: " << getDotString(aStructBuilder,aStructure->_Name,"aStruct"));
-//DEBUG(sLogger,"CTOR getMatchString: " << getMatchString(_TopNodeItem));
+//DEBUG(sLogger,"CTOR getDotString: "
+//    << getDotString(aStructBuilder,aStructure->_Name,"aStruct"));
+//DEBUG(sLogger,"CTOR getMatchString: "
+//    << getMatchString(_TopNodeItem));
 }
 
 //-------------------------------------------------------------------------------
@@ -55,164 +59,63 @@ static std::string blanks[] = {
 };
 
 //-------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------
-std::string DataStructModel::buildMatchForField(const Field &aField,int aIndentLevel)
-{
-  std::string tMatch = "^";
-  for (int tIdx = 0; tIdx < aIndentLevel; tIdx++)
-  {
-    tMatch += "\t";
-  }
-  tMatch += aField._Name + ":";
-  return tMatch;
-}
-
-//-------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------
-std::string DataStructModel::buildMatchForPrimitiveArrayField(const Field &aField,int aIndentLevel)
-{
-  return buildMatchForField(aField,aIndentLevel);
-}
-
-//-------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------
-std::string DataStructModel::buildMatchForPrimitiveField(const Field &aField,int aIndentLevel)
-{
-  return buildMatchForField(aField,aIndentLevel);
-}
-
-//-------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------
-std::string DataStructModel::buildMatchForStructArrayField(const Field &aField,int aIndentLevel)
-{
-  return buildMatchForField(aField,aIndentLevel);
-}
-
-//-------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------
-std::string DataStructModel::buildMatchForStructField(const Field &aField,int aIndentLevel)
-{
-  return buildMatchForField(aField,aIndentLevel);
-}
-
-//-------------------------------------------------------------------------------
+// Gets the match for the first field in the data structure. This will be used
+// by the reader to identify the start of the structure (since in wsdl there is
+// no other identifier,like the name of the structure, e.g.).
 //-------------------------------------------------------------------------------
 std::string DataStructModel::getFirstFieldMatch()
 {
-  std::cout << "top children: " << _TopNodeItem->childCount() << std::endl;
   return _TopNodeItem->child(0)->getData().getMatch();
 }
 
 //-------------------------------------------------------------------------------
-// Prints a description of the data structure in a hierarchical fashion.
-//  enum NodeType {eNone, eRoot, ePrimitive, eStruct, ePrimitiveArrayPtr, eStructArrayPtr};
+// Completes building a tree if field items after the root and top items have
+// been created. Is initially called with the top item, and then is called
+// recursively.
 //-------------------------------------------------------------------------------
-void DataStructModel::buildTree(FieldItem *aParentItem,
-    Structure *aStructure,StructorBuilder *aStructBuilder,int aLevel)
+void DataStructModel::buildTree(
+    FieldItem *aParentItem,Structure *aStruct,int aLevel)
 {
   boost::regex array_size_regex("^([a-zA-Z]+)_size$");
 
-  // If level is zero, this is the root node.
-  // Print the root node name at indent level, and increment the level to
-  // indent child fields.
   if (aLevel == 0)
   {
-    DEBUG(sLogger,"root node: " << aStructure->_Name);
-    aLevel++;
+      // nothing special to do at level zero
   }
 
-  // Print all of the fields. For fields that are structs themselves,
-  // this method will be called recursively.
   vector<Field>::iterator tIter;
-  for (tIter = aStructure->_Fields.begin(); tIter != aStructure->_Fields.end(); tIter++)
+  for (tIter = aStruct->_Fields.begin();
+       tIter != aStruct->_Fields.end(); tIter++)
   {
     boost::match_results<std::string::const_iterator> what;
 
+    // TODO this if block needed?
     // For array size line,
     // print the array type and name.
     if (boost::regex_match(tIter->_Name,what,array_size_regex))
     {
-//      std::string tName = what[1];
+      //std::string tName = what[1];
       DEBUG(sLogger,blanks[aLevel] << "array size entry: "
           << tIter->_Type << ":" << tIter->_Name);
     }
     else if (tIter->_IsPointer)
     {
-      // For primitive pointer,
-      // print type and name.
-      if (aStructBuilder->isPrimitive(tIter->_Type))
+      if (_StructBuilder->isPrimitive(tIter->_Type))
       {
-        std::string tMatch = buildMatchForPrimitiveArrayField(*tIter,aLevel);
-        FieldItemData tData(FieldItemData::ePrimitiveArrayPtr,
-            tIter->_Name,tIter->_Type,tMatch);
-        FieldItem *dataItem = new FieldItem(tData,aParentItem);
-        aParentItem->appendChild(dataItem);
-
-//        DEBUG(sLogger,blanks[aLevel]);
-        DEBUG(sLogger,blanks[aLevel] << "primitive array node: "
-            << tIter->_Type << ":" << tIter->_Name);
+        buildPrimitiveArrayNode(*tIter,aParentItem,aLevel);
       }
-      // For struct pointer,
-      // print type and name, increment level, and call this routine
-      // recursively to print the contents of the struct.
       else
       {
-//        DEBUG(sLogger,blanks[aLevel]);
-        DEBUG(sLogger,blanks[aLevel] << "struct array node: "
-            << tIter->_Type << ":" << tIter->_Name);
-        Structure *tStruct = aStructBuilder->getStructure(tIter->_Type);
-        if (tStruct != NULL)
-        {
-          std::string tMatch = buildMatchForStructArrayField(*tIter,aLevel);
-          FieldItemData tData(FieldItemData::eStructArrayPtr,
-              tIter->_Name,tIter->_Type,tMatch);
-          FieldItem *dataItem = new FieldItem(tData,aParentItem);
-          aParentItem->appendChild(dataItem);
-
-          buildTree(dataItem,tStruct,aStructBuilder,++aLevel);
-          --aLevel;
-        }
+        buildStructArrayNode(*tIter,aParentItem,aLevel);
       }
     }
-    // For struct field,
-    // print type and name, then call this routine recursively to print the
-    // contents of the struct.
-    else if (!aStructBuilder->isPrimitive(tIter->_Type))
+    else if (!_StructBuilder->isPrimitive(tIter->_Type))
     {
-//      DEBUG(sLogger,blanks[aLevel]);
-      DEBUG(sLogger,blanks[aLevel] << "struct node: "
-          << tIter->_Type << ":" << tIter->_Name);
-      Structure *tStruct = aStructBuilder->getStructure(tIter->_Type);
-      if (tStruct != NULL)
-      {
-        std::string tMatch = buildMatchForStructField(*tIter,aLevel);
-        FieldItemData tData(FieldItemData::eStruct,
-            tIter->_Name,tIter->_Type,tMatch);
-        FieldItem *dataItem = new FieldItem(tData,aParentItem);
-        aParentItem->appendChild(dataItem);
-
-        buildTree(dataItem,tStruct,aStructBuilder,++aLevel);
-        --aLevel;
-      }
-      else
-      {
-//        DEBUG(sLogger,blanks[aLevel]);
-        ERROR(sLogger,blanks[aLevel] << "Can't find struct " << tIter->_Name);
-      }
+      buildStructNode(*tIter,aParentItem,aLevel);
     }
-    // For primitive type field,
-    // print field type and name at current indent level.
     else
     {
-//      DEBUG(sLogger,blanks[aLevel]);
-      DEBUG(sLogger,blanks[aLevel] << "primitive node: "
-          << tIter->_Type << ":" << tIter->_Name);
-      std::string tMatch = buildMatchForPrimitiveField(*tIter,aLevel);
-      FieldItemData tData(FieldItemData::ePrimitive,
-          tIter->_Name,tIter->_Type,tMatch);
-      FieldItem *dataItem = new FieldItem(tData,aParentItem);
-
-      aParentItem->appendChild(dataItem);
+      buildPrimitiveNode(*tIter,aParentItem,aLevel);
     }
   }
 #if 0
@@ -234,10 +137,146 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
 #endif
 }
 
+//-------------------------------------------------------------------------------
+// Build a primitive array node for a struct field.
+//-------------------------------------------------------------------------------
+void DataStructModel::buildPrimitiveArrayNode(
+    Field &aField,FieldItem *aParentItem,int &aLevel)
+{
+  DEBUG(sLogger,blanks[aLevel] << "primitive array node: "
+      << aField._Type << ":" << aField._Name);
+
+  std::string tMatch = buildMatchForPrimitiveArrayField(aField,aLevel);
+
+  FieldItemData tData(FieldItemData::ePrimitiveArrayPtr,
+      aField._Name,aField._Type,tMatch);
+
+  FieldItem *dataItem = new FieldItem(tData,aParentItem);
+  aParentItem->appendChild(dataItem);
+}
+
+//-------------------------------------------------------------------------------
+// Build a struct array node for a struct field.
+// TODO what if tStruct is NULL?
+//-------------------------------------------------------------------------------
+void DataStructModel::buildStructArrayNode(
+    Field &aField,FieldItem *aParentItem,int &aLevel)
+{
+  DEBUG(sLogger,blanks[aLevel] << "struct array node: "
+      << aField._Type << ":" << aField._Name);
+
+  Structure *tStruct = _StructBuilder->getStructure(aField._Type);
+  if (tStruct != NULL)
+  {
+    std::string tMatch = buildMatchForStructArrayField(aField,aLevel);
+
+    FieldItemData tData(FieldItemData::eStructArrayPtr,
+        aField._Name,aField._Type,tMatch);
+
+    FieldItem *dataItem = new FieldItem(tData,aParentItem);
+
+    aParentItem->appendChild(dataItem);
+
+    buildTree(dataItem,tStruct,++aLevel);
+    --aLevel;
+  }
+}
+
+//-------------------------------------------------------------------------------
+// Build a tree node for a struct field.
+//-------------------------------------------------------------------------------
+void DataStructModel::buildStructNode(
+    Field &aField,FieldItem *aParentItem,int &aLevel)
+{
+  DEBUG(sLogger,blanks[aLevel] << "struct node: "
+      << aField._Type << ":" << aField._Name);
+  Structure *tStruct = _StructBuilder->getStructure(aField._Type);
+  if (tStruct != NULL)
+  {
+    std::string tMatch = buildMatchForStructField(aField,aLevel);
+    FieldItemData tData(FieldItemData::eStruct,
+        aField._Name,aField._Type,tMatch);
+    FieldItem *dataItem = new FieldItem(tData,aParentItem);
+    aParentItem->appendChild(dataItem);
+
+    buildTree(dataItem,tStruct,++aLevel);
+    --aLevel;
+  }
+  else
+  {
+    ERROR(sLogger,blanks[aLevel] << "Can't find struct " << aField._Name);
+  }
+}
+
+//-------------------------------------------------------------------------------
+// Build a tree node for a primitive field.
+//-------------------------------------------------------------------------------
+void DataStructModel::buildPrimitiveNode(
+    Field &aField,FieldItem *aParentItem,int &aLevel)
+{
+  DEBUG(sLogger,blanks[aLevel] << "primitive node: "
+      << aField._Type << ":" << aField._Name);
+
+  std::string tMatch = buildMatchForPrimitiveField(aField,aLevel);
+
+  FieldItemData tData(FieldItemData::ePrimitive,
+      aField._Name,aField._Type,tMatch);
+
+  FieldItem *dataItem = new FieldItem(tData,aParentItem);
+
+  aParentItem->appendChild(dataItem);
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+std::string DataStructModel::buildMatchForField(
+    const Field &aField,int aIndentLevel)
+{
+  std::string tMatch = "^";
+  for (int tIdx = 0; tIdx < aIndentLevel; tIdx++)
+  {
+    tMatch += "\t";
+  }
+  tMatch += aField._Name + ":";
+  return tMatch;
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+std::string DataStructModel::buildMatchForPrimitiveArrayField(
+    const Field &aField,int aIndentLevel)
+{
+  return buildMatchForField(aField,aIndentLevel);
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+std::string DataStructModel::buildMatchForPrimitiveField(
+    const Field &aField,int aIndentLevel)
+{
+  return buildMatchForField(aField,aIndentLevel);
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+std::string DataStructModel::buildMatchForStructArrayField(
+    const Field &aField,int aIndentLevel)
+{
+  return buildMatchForField(aField,aIndentLevel);
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+std::string DataStructModel::buildMatchForStructField(
+    const Field &aField,int aIndentLevel)
+{
+  return buildMatchForField(aField,aIndentLevel);
+}
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool DataStructModel::processLinesIn(std::vector<std::string> &aLinesIn,
-                                     std::vector<std::string> &aLinesOut)
+bool DataStructModel::processStructLines(
+    std::vector<std::string> &aLinesIn,std::vector<std::string> &aLinesOut)
 {
   vector<std::string>::iterator aLineIter = aLinesIn.begin();
   bool tSuccess = _TopNodeItem->processLines(aLinesIn,aLineIter,aLinesOut);
@@ -250,13 +289,6 @@ bool DataStructModel::processLinesIn(std::vector<std::string> &aLinesIn,
     ERROR(sLogger,"Processing: " << _TopNodeItem->getData().getName());
   }
   return tSuccess;
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-void DataStructModel::printInLines()
-{
-  _TopNodeItem->printInLines();
 }
 
 //-----------------------------------------------------------------------------
@@ -381,6 +413,7 @@ QVariant DataStructModel::data(const QModelIndex &index,int role) const
   FieldItem *item = static_cast<FieldItem*>(index.internalPointer());
 
   switch (role) {
+    case Qt::EditRole:
     case Qt::DisplayRole:
       return item->data(index.column());
       break;

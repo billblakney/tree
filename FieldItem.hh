@@ -83,9 +83,6 @@ public:
       std::vector<std::string>::iterator &aLineIter,
       std::vector<std::string> &aLinesOut);
 
-  void printInLines();
-
-
 protected:
 
   static ccl::Logger sLogger;
@@ -93,7 +90,6 @@ protected:
   FieldItem         *_ParentItem;
   QList<QVariant>    _ItemData;
   QList<FieldItem*>  _ChildItems;
-  std::string        _InLine;
 
   FieldItemData      _FieldItemData;
 
