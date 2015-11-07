@@ -276,14 +276,17 @@ bool FieldItem::processLines(
   {
     processRootLines(aLinesIn,aLineIter,aLinesOut);
   }
-
-  if ( getData().getNodeType() == FieldItemData::eStruct)
-  {
-    processStructLines(aLinesIn,aLineIter,aLinesOut);
-  }
   else if (getData().getNodeType() == FieldItemData::ePrimitive)
   {
     processPrimitiveLines(aLinesIn,aLineIter,aLinesOut);
+  }
+  else if (getData().getNodeType() == FieldItemData::ePrimitiveArrayPtr)
+  {
+    processPrimitiveArrayLines(aLinesIn,aLineIter,aLinesOut);
+  }
+  else if ( getData().getNodeType() == FieldItemData::eStruct)
+  {
+    processStructLines(aLinesIn,aLineIter,aLinesOut);
   }
   else if (getData().getNodeType() == FieldItemData::eStructArrayPtr)
   {
