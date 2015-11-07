@@ -16,8 +16,8 @@ extern StructorBuilder *lex_main(char *aHeaderFile);
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-MainWindow::MainWindow(int argc,char *argv[],
-    QApplication &aApplication,QWidget *aParent)
+MainWindow::MainWindow(
+    int argc, char *argv[], QApplication &aApp,QWidget *aParent)
   : QWidget(aParent),
     _StructorBuilder(0),
     _DataStructModel(0),
@@ -38,65 +38,65 @@ MainWindow::~MainWindow()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-DataStructModel *MainWindow::getStructDataModel()
-{
-  return _DataStructModel;
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
 void MainWindow::setupView()
 {
+  //-------------------------
   // Parse the header file.
-  _StructorBuilder = lex_main((char *)_HFile.c_str());
+  //-------------------------
+  _StructorBuilder = lex_main((char *) _HFile.c_str());
 //   _StructorBuilder->printSummary();
 //   _StructorBuilder->postProcess();
 
+  //-------------------------
   // Create structure dropdown list.
+  //-------------------------
   std::vector<std::string> tStructNames = _StructorBuilder->getStructNames();
   _StructComboBox = new QComboBox(this);
   _StructComboBox->addItems(convertToQStringList(tStructNames));
 
-  connect(_StructComboBox,SIGNAL(activated(int)),
-                       this, SLOT(onStructComboBoxActivated(int)));
+  connect(_StructComboBox, SIGNAL(activated(int)), this,
+      SLOT(onStructComboBoxActivated(int)));
 
+  //-------------------------
   // Create structure tree view.
+  //-------------------------
   _StructTree = new StructTreeView(this);
   setTreeViewStruct(_InitialStruct);
-  _StructTree->header()->resizeSection(0,225);
+  _StructTree->header()->resizeSection(0, 225);
 
 // TODO works form 4.8 on
 #ifdef EXPAND_ALL
-   _StructTree->expandAll();
+  _StructTree->expandAll();
 #else
-   _StructTree->expand(_StructTree->model()->index(0,0,QModelIndex()));
+  _StructTree->expand(_StructTree->model()->index(0, 0, QModelIndex()));
 #endif
 
-   QPushButton *tButton = new QPushButton("Set Filter",this);
+  //-------------------------
+  // Pushbutton for setting filter.
+  //-------------------------
+  QPushButton *tButton = new QPushButton("Set Filter", this);
 
-   connect(tButton,SIGNAL(clicked(bool)),this,SLOT(onSetFilterClicked(bool)));
+  connect(tButton, SIGNAL(clicked(bool)), this, SLOT(onSetFilterClicked(bool)));
 
-   //-------------------------
-   // Put widgets in the dialog using box layout.
-   //-------------------------
-   QVBoxLayout *layout = new QVBoxLayout;
-   layout->addWidget(_StructComboBox);
-   layout->addWidget(_StructTree);
-   layout->addWidget(tButton);
+  //-------------------------
+  // Put widgets in the dialog using box layout.
+  //-------------------------
+  QVBoxLayout *layout = new QVBoxLayout;
+  layout->addWidget(_StructComboBox);
+  layout->addWidget(_StructTree);
+  layout->addWidget(tButton);
 
-   setLayout(layout);
+  setLayout(layout);
 
-std::cout << "creating writer" << std::endl;
+  //-------------------------
+  // Record writer.
+  //-------------------------
   _Writer = new SimpleRecordWriter();
 
-//  window->getStructDataModel()->setRecordWriter();
-
-//  DataStructModel *aModel = window->getStructDataModel();
-
-
-//  StreamReader *tStreamReader = new StreamReader(aModel);
-std::cout << "creating stream reader" << std::endl;
-  _StreamReader = new StreamReader(_DataStructModel,_Writer);
+  //-------------------------
+  // Stream reader.
+  //-------------------------
+  _StreamReader = new StreamReader(_DataStructModel, _Writer);
   _StreamReader->start();
 }
 
@@ -107,7 +107,7 @@ std::cout << "creating stream reader" << std::endl;
 void MainWindow::setTreeViewStruct(std::string aStructName)
 {
   Structure *tStructure = _StructorBuilder->getStructure(aStructName);
-  _DataStructModel = new DataStructModel(tStructure,_StructorBuilder);
+  _DataStructModel = new DataStructModel(tStructure, _StructorBuilder);
   _StructTree->setModel(_DataStructModel);
 #if 0 //  seems to have no effect
   _StructTree->resizeColumnToContents(0);
@@ -122,7 +122,7 @@ QStringList MainWindow::convertToQStringList(std::vector<std::string> aStrings)
 {
   QStringList tList;
   std::vector<std::string>::iterator tIt;
-  for( tIt = aStrings.begin(); tIt != aStrings.end(); tIt++ )
+  for (tIt = aStrings.begin(); tIt != aStrings.end(); tIt++)
   {
     tList.push_back(tIt->c_str());
   }
@@ -134,8 +134,8 @@ QStringList MainWindow::convertToQStringList(std::vector<std::string> aStrings)
 //-------------------------------------------------------------------------------
 void MainWindow::onStructComboBoxActivated(int index)
 {
-    QString tString = _StructComboBox->itemText(index);
-    setTreeViewStruct(tString.toStdString());
+  QString tString = _StructComboBox->itemText(index);
+  setTreeViewStruct(tString.toStdString());
 }
 
 void MainWindow::onSetFilterClicked(bool)

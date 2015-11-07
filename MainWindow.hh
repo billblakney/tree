@@ -16,35 +16,28 @@ class MainWindow: public QWidget
   Q_OBJECT
 public:
 
-  MainWindow(int argc,char *argv[],
-      QApplication &aApplication,QWidget *aParent);
+  MainWindow(int argc,char *argv[],QApplication &aApp,QWidget *aParent);
 
   virtual ~MainWindow();
 
 	void setupView();
 
-  DataStructModel *getStructDataModel();
-
 public slots:
 
   void onStructComboBoxActivated(int index);
+
   void onSetFilterClicked(bool);
 
 protected:
 
-	std::string _HFile;
-
-	std::string _InitialStruct;
-
-	StructorBuilder *_StructorBuilder;
-
-	DataStructModel *_DataStructModel;
-
-	QComboBox       *_StructComboBox;
-	StructTreeView  *_StructTree;
-
+	std::string         _HFile;
+	std::string         _InitialStruct;
+	StructorBuilder    *_StructorBuilder;
+	DataStructModel    *_DataStructModel;
+	QComboBox          *_StructComboBox;
+	StructTreeView     *_StructTree;
   SimpleRecordWriter *_Writer;
-  StreamReader *_StreamReader;
+  StreamReader       *_StreamReader;
 
 	void setTreeViewStruct(std::string aStructName);
 
