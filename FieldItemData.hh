@@ -27,20 +27,22 @@ public:
       Qt::CheckState aCheckState = Qt::Unchecked);
 
   virtual ~FieldItemData();
-  Qt::CheckState getCheckState() const;
-  void SetCheckState(Qt::CheckState checkState);
-  const std::string& getMatch() const;
-  void SetMatch(const std::string& match);
-  const std::string& getName() const;
-  void SetName(const std::string& name);
-  FieldItemData::NodeType getNodeType() const;
-  void SetNodeType(NodeType nodeType);
-  const std::string& getPostfix() const;
-  void SetPostfix(const std::string& postfix);
-  const std::string& getType() const;
-  void SetType(const std::string& type);
 
-//protected: TODO
+  Qt::CheckState getCheckState() const;
+  const std::string& getMatch() const;
+  const std::string& getName() const;
+  FieldItemData::NodeType getNodeType() const;
+  const std::string& getPostfix() const;
+  const std::string& getType() const;
+
+  void setCheckState(Qt::CheckState checkState);
+  void setMatch(const std::string& match);
+  void setName(const std::string& name);
+  void setNodeType(NodeType nodeType);
+  void setPostfix(const std::string& postfix);
+  void setType(const std::string& type);
+
+protected:
 
 //  static ccl::Logger sLogger;
 

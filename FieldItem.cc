@@ -13,9 +13,9 @@ FieldItem::FieldItem(FieldItemData aData,FieldItem *aParentItem)
 
   QList<QVariant> tList;
 
-  _ItemData.append(QVariant(aData._Name.c_str()));
-  _ItemData.append(QVariant(aData._Type.c_str()));
-  _ItemData.append(QVariant(aData._Match.c_str()));
+  _ItemData.append(QVariant(aData.getName().c_str()));
+  _ItemData.append(QVariant(aData.getType().c_str()));
+  _ItemData.append(QVariant(aData.getMatch().c_str()));
   _ItemData.append(QVariant(QString("newline (\"\\n\")")));
 }
 
@@ -90,7 +90,7 @@ FieldItemData FieldItem::getData()
 //-------------------------------------------------------------------------------
 void FieldItem::setCheckState(Qt::CheckState aCheckState)
 {
-  _FieldItemData._CheckState = aCheckState;
+  _FieldItemData.setCheckState(aCheckState);
 }
 
 //-------------------------------------------------------------------------------
@@ -98,7 +98,7 @@ void FieldItem::setCheckState(Qt::CheckState aCheckState)
 void FieldItem::setFieldMatch(const QVariant &aValue)
 {
   _ItemData[eMatchCol] = QVariant(QString(aValue.toString()));
-  _FieldItemData._Match = aValue.toString().toStdString();
+  _FieldItemData.setMatch(aValue.toString().toStdString());
 }
 
 //-------------------------------------------------------------------------------
@@ -106,7 +106,7 @@ void FieldItem::setFieldMatch(const QVariant &aValue)
 void FieldItem::setFieldPostfix(const QVariant &aValue)
 {
   _ItemData[ePostfixCol] = aValue;
-  _FieldItemData._Postfix = aValue.toString().toStdString();
+  _FieldItemData.setPostfix(aValue.toString().toStdString());
 }
 
 static SimpleLineMatcher tMatcher; //TODO

@@ -381,6 +381,7 @@ QVariant DataStructModel::data(const QModelIndex &index,int role) const
   FieldItem *item = static_cast<FieldItem*>(index.internalPointer());
 
   switch (role) {
+    case Qt::EditRole:
     case Qt::DisplayRole:
       return item->data(index.column());
       break;
