@@ -14,7 +14,8 @@ QFont DataStructModel::kArrayFont;
 //-------------------------------------------------------------------------------
 DataStructModel::DataStructModel(
     Structure *aStruct,StructorBuilder *aStructBuilder)
-  : _RootItem(0),
+  : _StructBuilder(aStructBuilder),
+    _RootItem(0),
     _TopNodeItem(0)
 {
   kArrayFont.setItalic(true);
@@ -29,7 +30,7 @@ DataStructModel::DataStructModel(
 
   _RootItem->appendChild(_TopNodeItem);
 
-  buildTree(_TopNodeItem,aStruct,aStructBuilder);
+  buildTree(_TopNodeItem,aStruct);
 
 //DEBUG(sLogger,"CTOR getDotString: "
 //    << getDotString(aStructBuilder,aStructure->_Name,"aStruct"));
@@ -72,8 +73,8 @@ std::string DataStructModel::getFirstFieldMatch()
 // been created. Is initially called with the top item, and then is called
 // recursively.
 //-------------------------------------------------------------------------------
-void DataStructModel::buildTree(FieldItem *aParentItem,
-    Structure *aStruct,StructorBuilder *aStructBuilder,int aLevel)
+void DataStructModel::buildTree(
+    FieldItem *aParentItem,Structure *aStruct,int aLevel)
 {
   boost::regex array_size_regex("^([a-zA-Z]+)_size$");
 
@@ -88,6 +89,7 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
   {
     boost::match_results<std::string::const_iterator> what;
 
+    // TODO this if block needed?
     // For array size line,
     // print the array type and name.
     if (boost::regex_match(tIter->_Name,what,array_size_regex))
@@ -98,77 +100,22 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
     }
     else if (tIter->_IsPointer)
     {
-      // For primitive pointer,
-      // print type and name.
-      if (aStructBuilder->isPrimitive(tIter->_Type))
+      if (_StructBuilder->isPrimitive(tIter->_Type))
       {
-        std::string tMatch = buildMatchForPrimitiveArrayField(*tIter,aLevel);
-        FieldItemData tData(FieldItemData::ePrimitiveArrayPtr,
-            tIter->_Name,tIter->_Type,tMatch);
-
-        FieldItem *dataItem = new FieldItem(tData,aParentItem);
-        aParentItem->appendChild(dataItem);
-
-        DEBUG(sLogger,blanks[aLevel] << "primitive array node: "
-            << tIter->_Type << ":" << tIter->_Name);
+        buildPrimitiveArrayNode(*tIter,aParentItem,aLevel);
       }
-      // For struct pointer,
-      // print type and name, increment level, and call this routine
-      // recursively to print the contents of the struct.
       else
       {
-        DEBUG(sLogger,blanks[aLevel] << "struct array node: "
-            << tIter->_Type << ":" << tIter->_Name);
-        Structure *tStruct = aStructBuilder->getStructure(tIter->_Type);
-        if (tStruct != NULL)
-        {
-          std::string tMatch = buildMatchForStructArrayField(*tIter,aLevel);
-          FieldItemData tData(FieldItemData::eStructArrayPtr,
-              tIter->_Name,tIter->_Type,tMatch);
-          FieldItem *dataItem = new FieldItem(tData,aParentItem);
-          aParentItem->appendChild(dataItem);
-
-          buildTree(dataItem,tStruct,aStructBuilder,++aLevel);
-          --aLevel;
-        }
+        buildStructArrayNode(*tIter,aParentItem,aLevel);
       }
     }
-    // For struct field,
-    // print type and name, then call this routine recursively to print the
-    // contents of the struct.
-    else if (!aStructBuilder->isPrimitive(tIter->_Type))
+    else if (!_StructBuilder->isPrimitive(tIter->_Type))
     {
-      DEBUG(sLogger,blanks[aLevel] << "struct node: "
-          << tIter->_Type << ":" << tIter->_Name);
-      Structure *tStruct = aStructBuilder->getStructure(tIter->_Type);
-      if (tStruct != NULL)
-      {
-        std::string tMatch = buildMatchForStructField(*tIter,aLevel);
-        FieldItemData tData(FieldItemData::eStruct,
-            tIter->_Name,tIter->_Type,tMatch);
-        FieldItem *dataItem = new FieldItem(tData,aParentItem);
-        aParentItem->appendChild(dataItem);
-
-        buildTree(dataItem,tStruct,aStructBuilder,++aLevel);
-        --aLevel;
-      }
-      else
-      {
-        ERROR(sLogger,blanks[aLevel] << "Can't find struct " << tIter->_Name);
-      }
+      buildStructNode(*tIter,aParentItem,aLevel);
     }
-    // For primitive type field,
-    // print field type and name at current indent level.
     else
     {
-      DEBUG(sLogger,blanks[aLevel] << "primitive node: "
-          << tIter->_Type << ":" << tIter->_Name);
-      std::string tMatch = buildMatchForPrimitiveField(*tIter,aLevel);
-      FieldItemData tData(FieldItemData::ePrimitive,
-          tIter->_Name,tIter->_Type,tMatch);
-      FieldItem *dataItem = new FieldItem(tData,aParentItem);
-
-      aParentItem->appendChild(dataItem);
+      buildPrimitiveNode(*tIter,aParentItem,aLevel);
     }
   }
 #if 0
@@ -188,6 +135,96 @@ void DataStructModel::buildTree(FieldItem *aParentItem,
     }
   }
 #endif
+}
+
+//-------------------------------------------------------------------------------
+// Build a primitive array node for a struct field.
+//-------------------------------------------------------------------------------
+void DataStructModel::buildPrimitiveArrayNode(
+    Field &aField,FieldItem *aParentItem,int &aLevel)
+{
+  DEBUG(sLogger,blanks[aLevel] << "primitive array node: "
+      << aField._Type << ":" << aField._Name);
+
+  std::string tMatch = buildMatchForPrimitiveArrayField(aField,aLevel);
+
+  FieldItemData tData(FieldItemData::ePrimitiveArrayPtr,
+      aField._Name,aField._Type,tMatch);
+
+  FieldItem *dataItem = new FieldItem(tData,aParentItem);
+  aParentItem->appendChild(dataItem);
+}
+
+//-------------------------------------------------------------------------------
+// Build a struct array node for a struct field.
+// TODO what if tStruct is NULL?
+//-------------------------------------------------------------------------------
+void DataStructModel::buildStructArrayNode(
+    Field &aField,FieldItem *aParentItem,int &aLevel)
+{
+  DEBUG(sLogger,blanks[aLevel] << "struct array node: "
+      << aField._Type << ":" << aField._Name);
+
+  Structure *tStruct = _StructBuilder->getStructure(aField._Type);
+  if (tStruct != NULL)
+  {
+    std::string tMatch = buildMatchForStructArrayField(aField,aLevel);
+
+    FieldItemData tData(FieldItemData::eStructArrayPtr,
+        aField._Name,aField._Type,tMatch);
+
+    FieldItem *dataItem = new FieldItem(tData,aParentItem);
+
+    aParentItem->appendChild(dataItem);
+
+    buildTree(dataItem,tStruct,++aLevel);
+    --aLevel;
+  }
+}
+
+//-------------------------------------------------------------------------------
+// Build a tree node for a struct field.
+//-------------------------------------------------------------------------------
+void DataStructModel::buildStructNode(
+    Field &aField,FieldItem *aParentItem,int &aLevel)
+{
+  DEBUG(sLogger,blanks[aLevel] << "struct node: "
+      << aField._Type << ":" << aField._Name);
+  Structure *tStruct = _StructBuilder->getStructure(aField._Type);
+  if (tStruct != NULL)
+  {
+    std::string tMatch = buildMatchForStructField(aField,aLevel);
+    FieldItemData tData(FieldItemData::eStruct,
+        aField._Name,aField._Type,tMatch);
+    FieldItem *dataItem = new FieldItem(tData,aParentItem);
+    aParentItem->appendChild(dataItem);
+
+    buildTree(dataItem,tStruct,++aLevel);
+    --aLevel;
+  }
+  else
+  {
+    ERROR(sLogger,blanks[aLevel] << "Can't find struct " << aField._Name);
+  }
+}
+
+//-------------------------------------------------------------------------------
+// Build a tree node for a primitive field.
+//-------------------------------------------------------------------------------
+void DataStructModel::buildPrimitiveNode(
+    Field &aField,FieldItem *aParentItem,int &aLevel)
+{
+  DEBUG(sLogger,blanks[aLevel] << "primitive node: "
+      << aField._Type << ":" << aField._Name);
+
+  std::string tMatch = buildMatchForPrimitiveField(aField,aLevel);
+
+  FieldItemData tData(FieldItemData::ePrimitive,
+      aField._Name,aField._Type,tMatch);
+
+  FieldItem *dataItem = new FieldItem(tData,aParentItem);
+
+  aParentItem->appendChild(dataItem);
 }
 
 //-------------------------------------------------------------------------------
