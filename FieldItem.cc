@@ -129,29 +129,6 @@ bool FieldItem::processRootLines(
       return false;
     }
   }
-#if 0
-  std::string &tLine = *aLineIter;
-  aLineIter++;
-  if (!tLine.compare(getData().getMatch()))
-  {
-    DEBUG(sLogger,"Root node match: " << getData().getMatch());
-    _InLine = tLine;
-    for (int tIdx = 0; tIdx < childCount(); tIdx++)
-    {
-      bool tResult = child(tIdx)->processLines(aLinesIn,aLineIter);
-      if (tResult == false)
-      {
-        ERROR(sLogger,"Processing child failed");
-        return false;
-      }
-    }
-  }
-  else
-  {
-    ERROR(sLogger,"Root didn't match: " << getData().getMatch());
-    return false;
-  }
-#endif
   return true;
 }
 
@@ -167,11 +144,8 @@ bool FieldItem::processPrimitiveLines(
 
   tMatcher.setMatchRegex(getData().getMatch());
 
-  //TODO rm    if (!tLine.compare(getData().getMatch()))
-  //TODO make matcher a FieldItem field?
   if (tMatcher.match(tLine))
   {
-    _InLine = tLine;
     if (getData().getCheckState() == Qt::Checked)
     {
       aLinesOut.push_back(tLine);
@@ -214,8 +188,6 @@ bool FieldItem::processStructLines(
     tMatcher.setMatchRegex(getData().getMatch());
     if (tMatcher.match(tLine))
     {
-      _InLine = tLine;
-      //    _InLine = ""; //TODO decide on this
       DEBUG(sLogger,"struct node matched: " << getData().getMatch());
     }
     else
@@ -252,8 +224,6 @@ bool FieldItem::processStructArrayLines(
   tMatcher.setMatchRegex(getData().getMatch());
   if (tMatcher.match(tLine))
   {
-    _InLine = tLine;
-    //    _InLine = ""; //TODO decide on this
     DEBUG(sLogger,"struct array node matched: " << getData().getMatch());
   }
   else
@@ -270,8 +240,6 @@ bool FieldItem::processStructArrayLines(
   tMatcher.setMatchRegex(".*array of len: (\\d+)"); //TODO exact match of tabs?
   if (tMatcher.match(tLine))
   {
-    _InLine = tLine;
-    //    _InLine = ""; //TODO decide on this
     DEBUG(sLogger,"array of len matched: " << tLine);
   }
   else
@@ -323,18 +291,4 @@ bool FieldItem::processLines(
   }
 
   return true;;
-}
-
-//-------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------
-void FieldItem::printInLines()
-{
-  if (_InLine.size())
-  {
-    std::cout << _InLine << std::endl;
-  }
-  for (int tIdx = 0; tIdx < childCount(); tIdx++)
-  {
-    child(tIdx)->printInLines();
-  }
 }

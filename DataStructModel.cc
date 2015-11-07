@@ -254,13 +254,6 @@ bool DataStructModel::processLinesIn(std::vector<std::string> &aLinesIn,
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void DataStructModel::printInLines()
-{
-  _TopNodeItem->printInLines();
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
 std::string DataStructModel::getDotString(StructorBuilder *aStructBuilder,
     std::string aName,std::string aPrefix)
 {

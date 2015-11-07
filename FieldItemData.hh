@@ -3,7 +3,6 @@
 
 #include <string>
 #include <QCheckBox>
-//#include <QCheckState>
 #include "Logger.hh"
 
 /**

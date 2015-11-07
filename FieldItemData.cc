@@ -40,6 +40,9 @@ FieldItemData::~FieldItemData()
 {
 }
 
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+
 Qt::CheckState FieldItemData::getCheckState() const
 {
   return _CheckState;
