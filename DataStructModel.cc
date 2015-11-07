@@ -232,13 +232,9 @@ void DataStructModel::buildPrimitiveNode(
 std::string DataStructModel::buildMatchForField(
     const Field &aField,int aIndentLevel)
 {
-  std::string tMatch = "^";
-  for (int tIdx = 0; tIdx < aIndentLevel; tIdx++)
-  {
-    tMatch += "\t";
-  }
-  tMatch += aField._Name + ":";
-  return tMatch;
+  char tBuffer[50];
+  sprintf(tBuffer,"^[\\t]{%d}%s:",aIndentLevel,aField._Name.c_str());
+  return tBuffer;
 }
 
 //-------------------------------------------------------------------------------
@@ -254,7 +250,9 @@ std::string DataStructModel::buildMatchForPrimitiveArrayField(
 std::string DataStructModel::buildMatchForPrimitiveField(
     const Field &aField,int aIndentLevel)
 {
-  return buildMatchForField(aField,aIndentLevel);
+  static char tBuffer[200];
+  sprintf(tBuffer,"^[\\t]{%d}(%s):[\\t](.*)",aIndentLevel,aField._Name.c_str());
+  return tBuffer;
 }
 
 //-------------------------------------------------------------------------------
