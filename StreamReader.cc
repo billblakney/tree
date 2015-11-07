@@ -97,14 +97,13 @@ DEBUG(sLogger,"tFirstFieldMatch: " << tFirstFieldMatch);
         DEBUG(sLogger,"reached end of structure");
 #define USE_OLD
 #ifdef USE_OLD
-        if (_DataStructModel->processLinesIn(tStructLines,tOutLines))
+        if (_DataStructModel->processStructLines(tStructLines,tOutLines))
         {
           std::vector<std::string>::iterator tIter;
           for (tIter = tOutLines.begin(); tIter != tOutLines.end(); tIter++)
           {
             std::cout << ">>" << *tIter << std::endl; //TODO
           }
-//          _DataStructModel->printInLines();//TODO rm? and is that method worthwhile anymore?
         }
         else
         {

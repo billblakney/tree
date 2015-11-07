@@ -39,8 +39,8 @@ public:
   void buildTree(FieldItem *rootItem,Structure *aStructure,
       StructorBuilder *aStructBuilder,int aLevel = 0);
 
-  bool processLinesIn(std::vector<std::string> &aLinesIn,
-                      std::vector<std::string> &aLinesOut);
+  bool processStructLines(std::vector<std::string> &aLinesIn,
+                          std::vector<std::string> &aLinesOut);
 
   void printInLines();
 
