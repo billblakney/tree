@@ -148,7 +148,7 @@ void DataStructModel::buildPrimitiveArrayNode(
 
   std::string tMatch = buildMatchForPrimitiveArrayField(aField,aLevel);
 
-  FieldItemData tData(FieldItemData::ePrimitiveArrayPtr,
+  FieldItemData tData(FieldItemData::ePrimitiveArray,
       aField._Name,aField._Type,tMatch);
 
   FieldItem *dataItem = new FieldItem(tData,aParentItem);
@@ -170,7 +170,7 @@ void DataStructModel::buildStructArrayNode(
   {
     std::string tMatch = buildMatchForStructArrayField(aField,aLevel);
 
-    FieldItemData tData(FieldItemData::eStructArrayPtr,
+    FieldItemData tData(FieldItemData::eStructArray,
         aField._Name,aField._Type,tMatch);
 
     FieldItem *dataItem = new FieldItem(tData,aParentItem);
@@ -251,7 +251,7 @@ std::string DataStructModel::buildMatchForPrimitiveField(
     const Field &aField,int aIndentLevel)
 {
   static char tBuffer[200];
-  sprintf(tBuffer,"^[\\t]{%d}(%s):[\\t](.*)",aIndentLevel,aField._Name.c_str());
+  sprintf(tBuffer,"^[\\t]{%d}(%s):[\\s]+(.*)",aIndentLevel,aField._Name.c_str());
   return tBuffer;
 }
 
@@ -422,16 +422,16 @@ QVariant DataStructModel::data(const QModelIndex &index,int role) const
       }
       break;
     case Qt::FontRole:
-      if( item->getData().getNodeType() == FieldItemData::eStructArrayPtr
-       || item->getData().getNodeType() == FieldItemData::ePrimitiveArrayPtr)
+      if( item->getData().getNodeType() == FieldItemData::eStructArray
+       || item->getData().getNodeType() == FieldItemData::ePrimitiveArray)
       {
         return kArrayFont;
       }
       else if (
           item->parentItem()->getData().getNodeType()
-                                    == FieldItemData::eStructArrayPtr
+                                    == FieldItemData::eStructArray
        || item->parentItem()->getData().getNodeType()
-                                    == FieldItemData::ePrimitiveArrayPtr)
+                                    == FieldItemData::ePrimitiveArray)
       {
         return kArrayFont;
       }
@@ -482,6 +482,11 @@ bool DataStructModel::setData(
       item->setFieldMatch(value);
       emit dataChanged(index,index);
     }
+    else if (aCol == eColTestRegex)
+    {
+      item->setFieldTest(value);
+      emit dataChanged(index,index);
+    }
     else if (aCol == eColPostfix)
     {
       item->setFieldPostfix(value);
@@ -507,7 +512,9 @@ Qt::ItemFlags DataStructModel::flags(const QModelIndex &index) const
     tFlags |= Qt::ItemIsUserCheckable;
   }
 
-  if (index.column() == eColMatchRegex || index.column() == eColPostfix)
+  if (index.column() == eColMatchRegex ||
+      index.column() == eColTestRegex ||
+      index.column() == eColPostfix)
   {
     tFlags |= Qt::ItemIsEditable;
   }
@@ -533,6 +540,10 @@ QVariant DataStructModel::headerData(int section,Qt::Orientation orientation,
     else if (section == eColMatchRegex)
     {
       return QVariant("Match Regex");
+    }
+    else if (section == eColTestRegex)
+    {
+      return QVariant("Test Regex");
     }
     else if (section == eColPostfix)
     {

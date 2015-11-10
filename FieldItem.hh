@@ -16,7 +16,7 @@ class FieldItem
 {
 public:
 
-  enum Column {eNameCol, eTypeCol, eMatchCol, ePostfixCol};
+  enum Column {eNameCol, eTypeCol, eMatchCol, eTestCol, ePostfixCol};
 
   FieldItem(FieldItemData aData,FieldItem *aParentItem = 0);
 
@@ -49,6 +49,8 @@ public:
   void setCheckState(Qt::CheckState aCheckState);
 
   void setFieldMatch(const QVariant & value);
+
+  void setFieldTest(const QVariant & value);
 
   void setFieldPostfix(const QVariant & value);
 

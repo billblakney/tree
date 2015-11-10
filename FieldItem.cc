@@ -16,6 +16,7 @@ FieldItem::FieldItem(FieldItemData aData,FieldItem *aParentItem)
   _ItemData.append(QVariant(aData.getName().c_str()));
   _ItemData.append(QVariant(aData.getType().c_str()));
   _ItemData.append(QVariant(aData.getMatch().c_str()));
+  _ItemData.append(QVariant(aData.getTest().c_str()));
   _ItemData.append(QVariant(QString("newline (\"\\n\")")));
 }
 
@@ -94,11 +95,20 @@ void FieldItem::setCheckState(Qt::CheckState aCheckState)
 }
 
 //-------------------------------------------------------------------------------
+// TODO can probably remove - only test needs to be editable
 //-------------------------------------------------------------------------------
 void FieldItem::setFieldMatch(const QVariant &aValue)
 {
   _ItemData[eMatchCol] = QVariant(QString(aValue.toString()));
   _FieldItemData.setMatch(aValue.toString().toStdString());
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+void FieldItem::setFieldTest(const QVariant &aValue)
+{
+  _ItemData[eTestCol] = QVariant(QString(aValue.toString()));
+  _FieldItemData.setTest(aValue.toString().toStdString());
 }
 
 //-------------------------------------------------------------------------------
@@ -257,8 +267,6 @@ return false;
 }
 
 //-------------------------------------------------------------------------------
-//  enum NodeType {eNone, eRoot, ePrimitive, eStruct, ePrimitiveArrayPtr,
-//    eStructArrayPtr};
 //-------------------------------------------------------------------------------
 bool FieldItem::processLines(
     std::vector<std::string> &aLinesIn,
@@ -280,7 +288,7 @@ bool FieldItem::processLines(
   {
     processPrimitiveLines(aLinesIn,aLineIter,aLinesOut);
   }
-  else if (getData().getNodeType() == FieldItemData::ePrimitiveArrayPtr)
+  else if (getData().getNodeType() == FieldItemData::ePrimitiveArray)
   {
     processPrimitiveArrayLines(aLinesIn,aLineIter,aLinesOut);
   }
@@ -288,7 +296,7 @@ bool FieldItem::processLines(
   {
     processStructLines(aLinesIn,aLineIter,aLinesOut);
   }
-  else if (getData().getNodeType() == FieldItemData::eStructArrayPtr)
+  else if (getData().getNodeType() == FieldItemData::eStructArray)
   {
     processStructArrayLines(aLinesIn,aLineIter,aLinesOut);
   }
