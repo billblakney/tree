@@ -18,6 +18,7 @@ public:
     eColFieldName = 0,
     eColFieldType,
     eColMatchRegex,
+    eColTestRegex,
     eColPostfix,
     eNumColumns
   };

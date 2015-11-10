@@ -12,8 +12,8 @@ class FieldItemData
 {
 public:
 
-  enum NodeType {eNone, eRoot, ePrimitive, eStruct, ePrimitiveArrayPtr,
-    eStructArrayPtr};
+  enum NodeType {eNone, eRoot, ePrimitive, eStruct, ePrimitiveArray,
+    eStructArray};
 
   FieldItemData();
 
@@ -22,6 +22,7 @@ public:
       std::string aName,
       std::string aType,
       std::string aMatch = "",
+      std::string aTest = "",
       std::string aPostfix = "newline (\"\\n\")",
       Qt::CheckState aCheckState = Qt::Unchecked);
 
@@ -29,6 +30,7 @@ public:
 
   Qt::CheckState getCheckState() const;
   const std::string& getMatch() const;
+  const std::string& getTest() const;
   const std::string& getName() const;
   FieldItemData::NodeType getNodeType() const;
   const std::string& getPostfix() const;
@@ -36,6 +38,7 @@ public:
 
   void setCheckState(Qt::CheckState checkState);
   void setMatch(const std::string& match);
+  void setTest(const std::string& test);
   void setName(const std::string& name);
   void setNodeType(NodeType nodeType);
   void setPostfix(const std::string& postfix);
@@ -49,7 +52,8 @@ protected:
   Qt::CheckState     _CheckState;
   std::string        _Name;
   std::string        _Type;
-  std::string        _Match;
+  std::string        _FieldMatch;
+  std::string        _FieldTest;
   std::string        _Postfix;
 };
 

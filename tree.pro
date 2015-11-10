@@ -42,6 +42,7 @@ HEADERS += \
            DataStructModel.hh \
            FieldItem.hh \
            FieldItemData.hh \
+           FieldLineMatcher.hh \
            LineConsumer.hh \
            LineMatcher.hh \
            MainWindow.hh \
@@ -58,6 +59,7 @@ SOURCES += \
            DataStructModel.cc \
            FieldItem.cc \
            FieldItemData.cc \
+           FieldLineMatcher.cc \
            LineConsumer.cc \
            LineMatcher.cc \
            MainWindow.cc \
